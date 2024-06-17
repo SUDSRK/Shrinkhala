@@ -1,80 +1,73 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const { width, height } = Dimensions.get('window');
-const logoHeight = height * 0.4;
-const logoWidth = width * 0.8;
+const { height: viewportHeight } = Dimensions.get('window');
 
-const LoginOrSignUp: React.FC = () => {
+// Import the image directly
+const backgroundImage = require('../../assets/images/SplashScreen-bg.png');
+
+const Logo: React.FC = () => {
     const router = useRouter();
+    const [textVisible, setTextVisible] = useState(true);
+
+    const handleLogoClick = async () => {
+        setTextVisible(false);
+        const username = await AsyncStorage.getItem('userName');
+        if (username) {
+            router.push('/dashboard');
+        } else {
+            router.push('/loginorsignup');
+        }
+    };
 
     return (
-        <View style={styles.container}>
-            {/*<TouchableOpacity onPress={handleLogoClick}>*/}
-            {/*    /!*<Image source={require('../../assets/7317079.jpg')} style={styles.logo} />*!/*/}
-            {/*</TouchableOpacity>*/}
-            <View style={styles.nav}>
-                <TouchableOpacity
-                    onPress={() => router.push('/loginpage')}
-                    style={styles.button}
-                >
-                    <Text style={styles.buttonText}>Login</Text>
+        <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
+            <View style={[styles.overlay, { height: viewportHeight }]}>
+                <TouchableOpacity onPress={handleLogoClick}>
+                    <Text style={styles.logo}>Shrinkhala</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => router.push('/signup')}
-                    style={styles.button}
-                >
-                    <Text style={styles.buttonText}>Signup</Text>
-                </TouchableOpacity>
+                <View style={styles.footerContainer}>
+                    <Text style={styles.footerText}>A unit of : Ninety Seven Medicare Private Limited</Text>
+                </View>
             </View>
-            <View style={styles.footerContainer}>
-                <Text style={styles.footerText}>A unit of : Ninety Seven Medicare Private Limited</Text>
-            </View>
-        </View>
+        </ImageBackground>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    backgroundImage: {
         flex: 1,
+        resizeMode: 'cover',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff',
+    },
+    overlay: {
+        backgroundColor: 'rgba(56, 178, 172, 0)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        padding: 20,
     },
     logo: {
-        width: logoWidth,
-        height: logoHeight,
-        resizeMode: 'contain',
-        marginBottom: 20,
-    },
-    nav: {
-        alignItems: 'center',
-    },
-    button: {
-        backgroundColor: '#0198A5',
-        paddingVertical: 15,
-        paddingHorizontal: 30,
-        borderRadius: 8,
-        marginBottom: 10,
-    },
-    buttonText: {
+        fontSize: 24,
+        fontWeight: 'bold',
         color: '#fff',
-        fontSize: 16,
     },
     footerContainer: {
         position: 'absolute',
         left: 0,
         right: 0,
-        bottom: 0,
+        bottom: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        height: 20,
+        height: 50,
     },
     footerText: {
-        color: '#333',
-        fontSize: 12,
+        color: '#fff',
+        fontSize: 16,
     },
 });
 
-export default LoginOrSignUp;
+export default Logo;

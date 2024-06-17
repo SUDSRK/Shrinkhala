@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
-
-type RootStackParamList = {
-    Dashboard: undefined;
-    ForgetPassword: undefined;
-    RegistrationForm: undefined;
-};
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { Link } from 'expo-router';
 
 const Login: React.FC = () => {
-    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const [userId, setUserId] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [errorMsg, setErrorMsg] = useState<string>('');
@@ -52,7 +45,7 @@ const Login: React.FC = () => {
                 })
                 .then(data => {
                     // Handle successful login response
-                    navigation.navigate('Dashboard'); // Navigate to dashboard upon successful login
+                    // Navigate to dashboard upon successful login
                 })
                 .catch(error => {
                     // Handle error
@@ -62,21 +55,23 @@ const Login: React.FC = () => {
         }
     };
 
-    const forgetPasswordFunction = () => {
-        navigation.navigate('ForgetPassword');
-    };
-
-    const goToSignUp = () => {
-        navigation.navigate('RegistrationForm');
-    };
-
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Shrinkhala</Text>
             <Text style={styles.subtitle}>Login via</Text>
             <View style={styles.buttonContainer}>
-                <Button title="Mobile No." onPress={() => setLoginMethod('mobile')} color={loginMethod === 'mobile' ? '#38b2ac' : '#4fd1c5'} />
-                <Button title="UID No." onPress={() => setLoginMethod('uid')} color={loginMethod === 'uid' ? '#38b2ac' : '#4fd1c5'} />
+                <TouchableOpacity
+                    style={[styles.loginButton, loginMethod === 'mobile' ? styles.activeButton : null]}
+                    onPress={() => setLoginMethod('mobile')}
+                >
+                    <Text style={styles.loginButtonText}>Mobile No.</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.loginButton, loginMethod === 'uid' ? styles.activeButton : null]}
+                    onPress={() => setLoginMethod('uid')}
+                >
+                    <Text style={styles.loginButtonText}>UID No.</Text>
+                </TouchableOpacity>
             </View>
             <View>
                 {loginMethod === 'mobile' ? (
@@ -110,14 +105,16 @@ const Login: React.FC = () => {
                 <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={continueDisable}>
                     <Text style={styles.submitButtonText}>Continue</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={forgetPasswordFunction}>
-                    <Text style={styles.linkText}>Forget Password?</Text>
-                </TouchableOpacity>
+                <Link href="/forgetpassword" asChild>
+                    <TouchableOpacity>
+                        <Text style={styles.linkText}>Forget Password?</Text>
+                    </TouchableOpacity>
+                </Link>
                 <Text style={styles.signUpText}>
                     Don't have an account?{' '}
-                    <Text style={styles.signUpLink} onPress={goToSignUp}>
-                        Sign Up
-                    </Text>
+                    <Link href="/signup" asChild>
+                        <Text style={styles.signUpLink}>Sign Up</Text>
+                    </Link>
                 </Text>
             </View>
             <View style={styles.footerContainer}>
@@ -151,6 +148,20 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         marginBottom: 20,
+    },
+    loginButton: {
+        backgroundColor: '#4fd1c5',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+    },
+    activeButton: {
+        backgroundColor: '#38b2ac',
+    },
+    loginButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
     inputContainer: {
         marginBottom: 20,

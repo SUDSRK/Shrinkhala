@@ -25,7 +25,7 @@ const SignUp: React.FC = () => {
         if (inputValue.length === 10) {
             setNumberError(false);
             await AsyncStorage.setItem('phoneNumber', inputValue);
-            router.push({ pathname: '/otp', params: { phoneNumber: inputValue } });
+            router.push({ pathname: '/otpscreen', params: { phoneNumber: inputValue } });
         } else {
             setNumberError(true);
             setNumberErrorMsg('Please enter a 10 digit phone number.');
@@ -49,12 +49,7 @@ const SignUp: React.FC = () => {
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <TouchableOpacity onPress={backButtonHandler}>
-                        <Image
-                            source={require('../assets/images/back.svg')}
-                            style={styles.backIcon}
-                        />
-                    </TouchableOpacity>
+
                     <TextInput
                         style={styles.input}
                         keyboardType="numeric"
