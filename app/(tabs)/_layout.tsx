@@ -1,59 +1,80 @@
 import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { useRouter } from 'expo-router';
 
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+const { width, height } = Dimensions.get('window');
+const logoHeight = height * 0.4;
+const logoWidth = width * 0.8;
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
+const LoginOrSignUp: React.FC = () => {
+    const router = useRouter();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+    return (
+        <View style={styles.container}>
+            {/*<TouchableOpacity onPress={handleLogoClick}>*/}
+            {/*    /!*<Image source={require('../../assets/7317079.jpg')} style={styles.logo} />*!/*/}
+            {/*</TouchableOpacity>*/}
+            <View style={styles.nav}>
+                <TouchableOpacity
+                    onPress={() => router.push('/loginpage')}
+                    style={styles.button}
+                >
+                    <Text style={styles.buttonText}>Login</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => router.push('/signup')}
+                    style={styles.button}
+                >
+                    <Text style={styles.buttonText}>Signup</Text>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.footerContainer}>
+                <Text style={styles.footerText}>A unit of : Ninety Seven Medicare Private Limited</Text>
+            </View>
+        </View>
+    );
+};
 
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="two"
-        options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-    </Tabs>
-  );
-}
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    logo: {
+        width: logoWidth,
+        height: logoHeight,
+        resizeMode: 'contain',
+        marginBottom: 20,
+    },
+    nav: {
+        alignItems: 'center',
+    },
+    button: {
+        backgroundColor: '#0198A5',
+        paddingVertical: 15,
+        paddingHorizontal: 30,
+        borderRadius: 8,
+        marginBottom: 10,
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
+    },
+    footerContainer: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 20,
+    },
+    footerText: {
+        color: '#333',
+        fontSize: 12,
+    },
+});
+
+export default LoginOrSignUp;
