@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
+import {Link, useRouter} from 'expo-router';
 
 const Login: React.FC = () => {
+    const router = useRouter();
     const [userId, setUserId] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [errorMsg, setErrorMsg] = useState<string>('');
@@ -45,6 +46,8 @@ const Login: React.FC = () => {
                 })
                 .then(data => {
                     // Handle successful login response
+                    router.push('/dashboard');
+
                     // Navigate to dashboard upon successful login
                 })
                 .catch(error => {
@@ -102,7 +105,7 @@ const Login: React.FC = () => {
                     />
                 </View>
                 {errorMsg ? <Text style={styles.errorMsg}>{errorMsg}</Text> : null}
-                <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={continueDisable}>
+                <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                     <Text style={styles.submitButtonText}>Continue</Text>
                 </TouchableOpacity>
                 <Link href="/forgetpassword" asChild>

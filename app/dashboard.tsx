@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
     View,
     Text,
@@ -13,6 +13,7 @@ import {
     FlatList,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { CameraView, useCameraPermissions } from "expo-camera";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -50,8 +51,12 @@ const Dashboard = () => {
     const [reports, setReports] = useState<Report[]>([]);
     const [activeSpan, setActiveSpan] = useState<string>("All");
     const [activeTab, setActiveTab] = useState<string>("Home");
+    const [cameraVisible, setCameraVisible] = useState<boolean>(false);
+    const [cameraType, setCameraType] = useState('back');
+    const [permission, requestPermission] = useCameraPermissions();
 
     const navigation = useNavigation();
+    const cameraRef = useRef(null);
 
     useEffect(() => {
         const getUserInfo = async () => {
@@ -138,14 +143,15 @@ const Dashboard = () => {
     };
 
     const handleCaptureImage = async () => {
-        const result = await ImagePicker.launchCameraAsync({
-            allowsEditing: false,
-        });
-
-        if (!result.canceled) {
-            closeModal();
-            navigation.navigate("Preview", { selectedFiles: [result], userName });
+        if (!permission) {
+            return;
         }
+
+        if (!permission.granted) {
+            await requestPermission();
+        }
+
+        setCameraVisible(true);
     };
 
     const getTestTypeColor = (testType: string) => {
@@ -162,7 +168,7 @@ const Dashboard = () => {
     };
 
     const handleView = (url: string) => {
-        // navigation.navigate("ReportView", { url });
+        navigation.navigate("ReportView", { url });
     };
 
     const handleSpanClick = (span: string) => {
@@ -191,6 +197,19 @@ const Dashboard = () => {
         setShowSecondModal(true);
     };
 
+    const handleTakePicture = async () => {
+        if (cameraRef.current) {
+            const photo = await cameraRef.current.takePictureAsync();
+            setCameraVisible(false);
+            closeModal();
+            navigation.navigate("preview", { selectedFiles: [photo], userName });
+        }
+    };
+
+    const toggleCameraType = () => {
+        setCameraType(current => (current === 'back' ? 'front' : 'back'));
+    };
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <ImageBackground source={whiteimg} style={styles.backgroundImage}>
@@ -216,7 +235,7 @@ const Dashboard = () => {
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.button}
-                                onPress={() => navigation.navigate("sharereport")}
+                                onPress={() => navigation.navigate("ShareReport")}
                             >
                                 <MaterialIcons
                                     name="share"
@@ -380,7 +399,7 @@ const Dashboard = () => {
                         style={styles.tab}
                         onPress={() => {
                             setActiveTab("Profile");
-                            // navigation.navigate("Profile");
+                            navigation.navigate("Profile");
                         }}
                     >
                         <MaterialIcons
@@ -408,6 +427,23 @@ const Dashboard = () => {
                     </TouchableOpacity>
                 </View>
             </ImageBackground>
+            <Modal visible={cameraVisible} transparent={true}>
+                <View style={{ flex: 1, backgroundColor: "black" }}>
+                    <CameraView style={{ flex: 1 }} facing={cameraType} ref={cameraRef}>
+                        <View style={styles.cameraContainer}>
+                            <TouchableOpacity style={styles.flipButton} onPress={toggleCameraType}>
+                                <Text style={styles.flipText}>Flip</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.captureButton} onPress={handleTakePicture}>
+                                <Text style={styles.captureText}>Capture</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.backButton} onPress={() => setCameraVisible(false)}>
+                                <Text style={styles.backText}>Back</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </CameraView>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 };
@@ -616,6 +652,41 @@ const styles = StyleSheet.create({
     uploadOptionText: {
         fontSize: 16,
         textAlign: "center",
+    },
+    cameraContainer: {
+        flex: 1,
+        backgroundColor: "transparent",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-end",
+        padding: 20,
+    },
+    captureButton: {
+        backgroundColor: "white",
+        padding: 10,
+        borderRadius: 5,
+    },
+    captureText: {
+        fontSize: 16,
+        color: "black",
+    },
+    flipButton: {
+        position: "absolute",
+        top: 20,
+        left: 20,
+    },
+    flipText: {
+        fontSize: 18,
+        color: "white",
+    },
+    backButton: {
+        position: "absolute",
+        top: 20,
+        right: 20,
+    },
+    backText: {
+        fontSize: 18,
+        color: "white",
     },
 });
 
