@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import {Link, useRouter} from 'expo-router';
+import { Link, useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login: React.FC = () => {
     const router = useRouter();
@@ -45,10 +46,36 @@ const Login: React.FC = () => {
                     return response.json();
                 })
                 .then(data => {
-                    // Handle successful login response
-                    router.push('/dashboard');
+                    if (data.user_id) {
+                        const { user_id } = data;
+                        AsyncStorage.setItem('userName', user_id); // Save user_id to local storage
+
+                        // Fetch additional user data
+                        return fetch(`https://api.shrinkhala.in/patient/${user_id}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            referrerPolicy: 'strict-origin-when-cross-origin'
+                        });
+                    } else {
+                        throw new Error('User ID not found in response');
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(userData => {
+                    // Save phone number and first name + last name to local storage
+                    const { phone_number, first_name, last_name } = userData;
+                    AsyncStorage.setItem('phone_number', phone_number.toString());
+                    AsyncStorage.setItem('fullName', `${first_name} ${last_name}`);
 
                     // Navigate to dashboard upon successful login
+                    router.push('/dashboard');
                 })
                 .catch(error => {
                     // Handle error
