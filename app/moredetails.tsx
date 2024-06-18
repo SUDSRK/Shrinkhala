@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { RadioButton } from 'react-native-paper';
-// import CheckBox from '../components/CheckBox';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 type FormData = {
   firstName: string;
@@ -99,7 +99,7 @@ const MoreDetails: React.FC = () => {
     AsyncStorage.setItem('fullName', fullName);
     console.log("other form details-", otherFormData);
 
-    fetch('http://34.131.227.229:8081/patient', {
+    fetch('https://api.shrinkhala.in/patient', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -233,6 +233,14 @@ const MoreDetails: React.FC = () => {
       )}
 
       <Text style={styles.sectionTitle}>Kin's Address</Text>
+      <View style={styles.checkboxContainer}>
+        {/* <CheckBox
+          value={isChecked}
+          onValueChange={handleCheckboxChange}
+        /> */}
+        <BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {}} />
+        <Text style={styles.checkboxLabel}>Same as Patient</Text>
+      </View>
       <View>
         <TextInput
           style={[styles.input]}
@@ -283,6 +291,7 @@ const MoreDetails: React.FC = () => {
           value={isChecked}
           onValueChange={handleCheckboxChange}
         /> */}
+        <BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {}} />
         <Text style={styles.checkboxLabel}>I agree to the Terms and Conditions</Text>
       </View>
 
@@ -370,7 +379,9 @@ const styles = StyleSheet.create({
     marginTop: 13,
   },
   checkboxLabel: {
-    marginLeft: 8,
+    fontSize: 16,
+    paddingVertical: 4,
+    // fontWeight: 'bold',
   },
   submitButton: {
     backgroundColor: '#0198A5',
