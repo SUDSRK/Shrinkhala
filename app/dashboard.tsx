@@ -167,7 +167,7 @@ const Dashboard = () => {
     };
 
     const handleView = (url: string) => {
-        navigation.navigate("ReportView", { url });
+        navigation.navigate("reportViewer", { url });
     };
 
     const handleSpanClick = (span: string) => {
