@@ -39,7 +39,7 @@ const OtpScreen = () => {
 
         if (otpString === "7044") {
             setIsSubmitting(false);
-            router.push({ pathname: '/registrationform', params: { phoneNumber } });
+            router.push({ pathname: '/RegistrationForm', params: { phoneNumber } });
         } else {
             setIsSubmitting(false);
             setIncorrectOtp("Incorrect OTP");

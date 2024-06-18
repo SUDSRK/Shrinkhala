@@ -141,7 +141,7 @@ const Dashboard = () => {
 
         if (!result.canceled) {
             closeModal();
-            navigation.navigate("preview", { selectedFiles: result.assets, userName });
+            navigation.navigate("Preview", { selectedFiles: result.assets, userName });
         }
     };
 
@@ -171,7 +171,7 @@ const Dashboard = () => {
     };
 
     const handleView = (url: string) => {
-        navigation.navigate("reportViewer", { url });
+        navigation.navigate("ReportViewer", { url });
     };
 
     const handleSpanClick = (span: string) => {
@@ -205,7 +205,7 @@ const Dashboard = () => {
             const photo = await cameraRef.current.takePictureAsync();
             setCameraVisible(false);
             closeModal();
-            navigation.navigate("preview", { selectedFiles: [photo], userName });
+            navigation.navigate("Preview", { selectedFiles: [photo], userName });
         }
     };
 
@@ -242,7 +242,7 @@ const Dashboard = () => {
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={styles.button}
-                                        onPress={() => navigation.navigate("sharereport")}
+                                        onPress={() => navigation.navigate("ShareReport")}
                                     >
                                         <MaterialIcons
                                             name="share"

@@ -117,7 +117,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
     // setPatientDetails(formData);
     await AsyncStorage.setItem('patientData', JSON.stringify(formData));
     await AsyncStorage.setItem('phoneNumber', formData.mobileNumber);
-    navigation.navigate('moredetails', { formData });
+    navigation.navigate('MoreDetails', { formData });
     // router.push({ pathname: '/moredetails', params: { formData: JSON.stringify(formData) }, });
   };
 
