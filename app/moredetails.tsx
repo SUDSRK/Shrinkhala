@@ -29,6 +29,7 @@ type FormData = {
 };
 
 type OtherFormData = {
+  sameAddress: string,
   caregiverOrOther: string;
   otherFirstName: string;
   otherLastName: string;
@@ -54,6 +55,7 @@ const MoreDetails: React.FC = () => {
   }, []);
 
   const [otherFormData, setOtherFormData] = useState<OtherFormData>({
+    sameAddress: '',
     caregiverOrOther: '',
     otherFirstName: '',
     otherLastName: '',
@@ -69,10 +71,21 @@ const MoreDetails: React.FC = () => {
 
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
+  const [hideInputs, setHideInputs] = useState<boolean>(false);
 
   const handleCheckboxChange = (newValue: boolean) => {
     setIsChecked(newValue);
-    disableCheck();
+    console.log(newValue+"---");
+    
+    if(newValue===true) {
+      setHideInputs(true);
+      handleChangeLocal('sameAddress','true');
+    }
+    else if(newValue===false) {
+      setHideInputs(false);
+      handleChangeLocal('sameAddress','false');
+    }
+    // disableCheck();
   };
 
   const handleChangeLocal = (name: keyof OtherFormData, value: string) => {
@@ -124,6 +137,7 @@ const MoreDetails: React.FC = () => {
         care_giver_last_name: formData.careLastName,
         care_giver_mobile_number: formData.careMobNo,
         care_giver_relation: formData.careRelation,
+        same_address: otherFormData.sameAddress,
         kin_first_name: otherFormData.otherFirstName,
         kin_last_name: otherFormData.otherLastName,
         kin_mobile_number: otherFormData.othermobileNumber,
@@ -238,54 +252,57 @@ const MoreDetails: React.FC = () => {
           value={isChecked}
           onValueChange={handleCheckboxChange}
         /> */}
-        <BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {}} />
+        <BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {handleCheckboxChange(isChecked)}} />
         <Text style={styles.checkboxLabel}>Same as Patient</Text>
       </View>
-      <View>
-        <TextInput
-          style={[styles.input]}
-          placeholder="   House/Flat Number"
-          value={otherFormData.kinHouse}
-          onChangeText={(value) => handleChangeLocal('kinHouse', value)}
-        />
-        <TextInput
-          style={[styles.input]}
-          placeholder="   Locality"
-          value={otherFormData.kinLocality}
-          onChangeText={(value) => handleChangeLocal('kinLocality', value)}
-        />
-      </View>
-      <View style={styles.inputGroup}>
-        <TextInput
-          style={[styles.input, styles.halfWidth]}
-          placeholder="   City"
-          value={otherFormData.kinCity}
-          onChangeText={(value) => handleChangeLocal('kinCity', value)}
-        />
-        <TextInput
-          style={[styles.input, styles.halfWidth]}
-          placeholder="   District"
-          value={otherFormData.kinDistrict}
-          onChangeText={(value) => handleChangeLocal('kinDistrict', value)}
-        />
-      </View>
-      <View style={styles.inputGroup}>
-        <TextInput
-          style={[styles.input, styles.halfWidth]}
-          placeholder="   State"
-          value={otherFormData.kinState}
-          onChangeText={(value) => handleChangeLocal('kinState', value)}
-        />
-        <TextInput
-          style={[styles.input, styles.halfWidth]}
-          placeholder="   Pincode"
-          value={otherFormData.kinPincode}
-          keyboardType="numeric"
-          maxLength={6}
-          onChangeText={(value) => handleChangeLocal('kinPincode', value)}
-        />
-      </View>
-
+      {!hideInputs&&(
+        <>
+        <View>
+          <TextInput
+            style={[styles.input]}
+            placeholder="   House/Flat Number"
+            value={otherFormData.kinHouse}
+            onChangeText={(value) => handleChangeLocal('kinHouse', value)}
+          />
+          <TextInput
+            style={[styles.input]}
+            placeholder="   Locality"
+            value={otherFormData.kinLocality}
+            onChangeText={(value) => handleChangeLocal('kinLocality', value)}
+          />
+        </View>
+        <View style={styles.inputGroup}>
+          <TextInput
+            style={[styles.input, styles.halfWidth]}
+            placeholder="   City"
+            value={otherFormData.kinCity}
+            onChangeText={(value) => handleChangeLocal('kinCity', value)}
+          />
+          <TextInput
+            style={[styles.input, styles.halfWidth]}
+            placeholder="   District"
+            value={otherFormData.kinDistrict}
+            onChangeText={(value) => handleChangeLocal('kinDistrict', value)}
+          />
+        </View>
+        <View style={styles.inputGroup}>
+          <TextInput
+            style={[styles.input, styles.halfWidth]}
+            placeholder="   State"
+            value={otherFormData.kinState}
+            onChangeText={(value) => handleChangeLocal('kinState', value)}
+          />
+          <TextInput
+            style={[styles.input, styles.halfWidth]}
+            placeholder="   Pincode"
+            value={otherFormData.kinPincode}
+            keyboardType="numeric"
+            maxLength={6}
+            onChangeText={(value) => handleChangeLocal('kinPincode', value)}
+          />
+        </View>
+      </>
+)}
       <View style={styles.checkboxContainer}>
         {/* <CheckBox
           value={isChecked}
