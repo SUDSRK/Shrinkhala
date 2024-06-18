@@ -25,7 +25,7 @@ const Login: React.FC = () => {
         if (!userId || !password) {
             setErrorMsg("Please Enter UserId & Password");
         } else {
-            const apiUrl = loginMethod === 'mobile' ? 'http://34.131.227.229:8081/patient/signin_phone' : 'http://34.131.227.229:8081/patient/login_uuid';
+            const apiUrl = loginMethod === 'mobile' ? 'https://api.shrinkhala.in/patient/signin_phone' : 'https://api.shrinkhala.in/patient/login_uuid';
             const payload = loginMethod === 'mobile' ? { phone_number: userId, password: password } : { user_id: userId, password: password };
             console.log(apiUrl + ' ' + JSON.stringify(payload));
 
