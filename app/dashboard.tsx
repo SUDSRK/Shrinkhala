@@ -42,8 +42,8 @@ const getPermission = async () => {
 };
 
 const Dashboard = () => {
-    const [userName, setUserName] = useState<string>("TePa43887");
-    const [name, setName] = useState<string>("Test patient");
+    const [userName, setUserName] = useState<string>("");
+    const [name, setName] = useState<string>("");
     const [pdfSource, setPdfSource] = useState<string | null>(null);
     const [showModal, setShowModal] = useState<boolean>(false);
     const [showSecondModal, setShowSecondModal] = useState<boolean>(false);
@@ -58,19 +58,23 @@ const Dashboard = () => {
     const cameraRef = useRef(null);
 
     useEffect(() => {
-        const getUserInfo = async () => {
-            const username = await AsyncStorage.getItem("userName");
-            if (username) {
-                setUserName(username);
-            }
+        const fetchUserData = async () => {
+            try {
+                const storedUserName = await AsyncStorage.getItem('userName');
+                const storedName = await AsyncStorage.getItem('fullName');
 
-            const fullNameFromLocalStorage = await AsyncStorage.getItem("fullName");
-            if (fullNameFromLocalStorage) {
-                setName(fullNameFromLocalStorage);
+                if (storedUserName) {
+                    setUserName(storedUserName);
+                }
+                if (storedName) {
+                    setName(storedName);
+                }
+            } catch (error) {
+                console.error('Failed to load user data from storage', error);
             }
         };
 
-        getUserInfo();
+        fetchUserData();
     }, []);
 
     useEffect(() => {

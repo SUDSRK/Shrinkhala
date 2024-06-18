@@ -17,7 +17,7 @@ interface QRData {
 }
 
 const ShareReport = () => {
-    const [userName, setUserName] = useState<string>('TePa43887');
+    const [userName, setUserName] = useState<string>('');
     const navigation = useNavigation();
     const [showOtpPopup, setShowOtpPopup] = useState<boolean>(false);
     const [otp, setOtp] = useState<string>('');
