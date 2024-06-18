@@ -19,7 +19,7 @@ const ForgetPassword: React.FC = () => {
         console.log('inputValue-', inputValue);
         if (inputValue.length === 10) {
             setNumberError(false);
-            router.push({ pathname: '/otpscreen', params: { mobileNumber: inputValue } });
+            router.push({ pathname: '/forgetotpscreen', params: { mobileNumber: inputValue } });
         } else {
             setNumberError(true);
             setNumberErrorMsg('Please enter a 10 digit phone number.');
