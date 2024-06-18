@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: 'black',
     borderRadius: 25, // Adjusted to be more rounded
     padding: width * 0.03, // Adjusted for better touch target
     marginVertical: width * 0.025,
