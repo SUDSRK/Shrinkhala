@@ -8,7 +8,6 @@ import {
     Alert,
     Linking,
     SafeAreaView,
-    ScrollView,
     StyleSheet,
     FlatList,
 } from "react-native";
@@ -43,8 +42,8 @@ const getPermission = async () => {
 };
 
 const Dashboard = () => {
-    const [userName, setUserName] = useState<string>("");
-    const [name, setName] = useState<string>("");
+    const [userName, setUserName] = useState<string>("TePa43887");
+    const [name, setName] = useState<string>("Test patient");
     const [pdfSource, setPdfSource] = useState<string | null>(null);
     const [showModal, setShowModal] = useState<boolean>(false);
     const [showSecondModal, setShowSecondModal] = useState<boolean>(false);
@@ -52,7 +51,7 @@ const Dashboard = () => {
     const [activeSpan, setActiveSpan] = useState<string>("All");
     const [activeTab, setActiveTab] = useState<string>("Home");
     const [cameraVisible, setCameraVisible] = useState<boolean>(false);
-    const [cameraType, setCameraType] = useState('back');
+    const [cameraType, setCameraType] = useState<'back' | 'front'>('back');
     const [permission, requestPermission] = useCameraPermissions();
 
     const navigation = useNavigation();
@@ -213,187 +212,189 @@ const Dashboard = () => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <ImageBackground source={whiteimg} style={styles.backgroundImage}>
-                <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                    <View style={styles.overlay}>
-                        <View style={styles.profileContainer}>
-                            <View style={styles.circularIcon}>
-                                <Text style={styles.initials}>{getInitials(name)}</Text>
+                <FlatList
+                    data={filteredReports}
+                    keyExtractor={(item, index) => index.toString()}
+                    ListHeaderComponent={() => (
+                        <>
+                            <View style={styles.overlay}>
+                                <View style={styles.profileContainer}>
+                                    <View style={styles.circularIcon}>
+                                        <Text style={styles.initials}>{getInitials(name)}</Text>
+                                    </View>
+                                    <Text style={styles.userInfo}>Patient: {name}</Text>
+                                    <Text style={styles.userInfo}>UID No: {userName}</Text>
+                                </View>
+                                <View style={styles.divider} />
+                                <View style={styles.actionsContainer}>
+                                    <TouchableOpacity style={styles.button} onPress={openModal}>
+                                        <MaterialIcons
+                                            name="cloud-upload"
+                                            size={28}
+                                            color="#0198A5"
+                                            style={styles.icon}
+                                        />
+                                        <Text style={styles.buttonText}>Upload Report</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={styles.button}
+                                        onPress={() => navigation.navigate("sharereport")}
+                                    >
+                                        <MaterialIcons
+                                            name="share"
+                                            size={24}
+                                            color="#0198A5"
+                                            style={styles.icon}
+                                        />
+                                        <Text style={styles.buttonText}>Share with Doctor</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.divider} />
+                                <ImageBackground source={backgroundImage}>
+                                    <View style={{ paddingTop: 10 }}>
+                                        <Text style={{ fontSize: 20 }}>Your Reports</Text>
+                                    </View>
+                                    <View style={styles.filterContainer}>
+                                        <TouchableOpacity
+                                            onPress={() => handleSpanClick("All")}
+                                            style={[
+                                                styles.filterButton,
+                                                activeSpan === "All" && styles.activeFilter,
+                                            ]}
+                                        >
+                                            <Text style={styles.filterText}>All</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            onPress={() => handleSpanClick("Blood test")}
+                                            style={[
+                                                styles.filterButton,
+                                                activeSpan === "Blood test" && styles.activeFilter,
+                                            ]}
+                                        >
+                                            <Text style={styles.filterText}>Blood test</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            onPress={() => handleSpanClick("Radiology")}
+                                            style={[
+                                                styles.filterButton,
+                                                activeSpan === "Radiology" && styles.activeFilter,
+                                            ]}
+                                        >
+                                            <Text style={styles.filterText}>Radiology</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            onPress={() => handleSpanClick("Pathology")}
+                                            style={[
+                                                styles.filterButton,
+                                                activeSpan === "Pathology" && styles.activeFilter,
+                                            ]}
+                                        >
+                                            <Text style={styles.filterText}>Pathology</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </ImageBackground>
                             </View>
-                            <Text style={styles.userInfo}>Patient: {name}</Text>
-                            <Text style={styles.userInfo}>UID No: {userName}</Text>
+                        </>
+                    )}
+                    renderItem={({ item }) => (
+                        <View style={styles.reportItem}>
+                            <View style={styles.reportLeftContainer}>
+                                <Text style={styles.reportTitle}>
+                                    Report Name: {item.test_name}
+                                </Text>
+                                <Text style={styles.reportSubtitle}>
+                                    Test Type: {item.test_type}
+                                </Text>
+                                <TouchableOpacity
+                                    style={styles.btn}
+                                    onPress={() => handleDownload(item.unique_file_path_name)}
+                                >
+                                    <Text style={styles.btnText}>Download</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.reportRightContainer}>
+                                <Text
+                                    style={[
+                                        styles.testType,
+                                        {
+                                            backgroundColor: getTestTypeColor(item.test_type)
+                                                .bgColor,
+                                            color: getTestTypeColor(item.test_type).textColor,
+                                        },
+                                    ]}
+                                >
+                                    {item.test_type}
+                                </Text>
+                                <Text style={styles.reportDate}>
+                                    {item.extracted_date}
+                                </Text>
+                                <TouchableOpacity
+                                    style={styles.btnView}
+                                    onPress={() => handleView(item.unique_file_path_name)}
+                                >
+                                    <Text style={styles.btnViewColor}>View</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                        <View style={styles.divider} />
-                        <View style={styles.actionsContainer}>
-                            <TouchableOpacity style={styles.button} onPress={openModal}>
-                                <MaterialIcons
-                                    name="cloud-upload"
-                                    size={28}
-                                    color="#0198A5"
-                                    style={styles.icon}
-                                />
-                                <Text style={styles.buttonText}>Upload Report</Text>
+                    )}
+                    contentContainerStyle={{ paddingBottom: 70 }}
+                />
+                <Modal visible={showModal} transparent={true} animationType="slide">
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <TouchableOpacity
+                                style={styles.modalClose}
+                                onPress={() => setShowModal(false)}
+                            >
+                                <Text style={styles.modalCloseText}>&times;</Text>
+                            </TouchableOpacity>
+                            <Text style={styles.modalTitle}>Upload a new Report</Text>
+                            <TouchableOpacity
+                                style={styles.uploadButton}
+                                onPress={handleUploadOption}
+                            >
+                                <Text style={styles.uploadButtonText}>From Phone</Text>
+                            </TouchableOpacity>
+                            <Text style={styles.orText}>OR</Text>
+                            <TouchableOpacity
+                                style={styles.uploadButton}
+                                onPress={handleCaptureImage}
+                            >
+                                <Text style={styles.uploadButtonText}>Scan report</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
+
+                <Modal
+                    visible={showSecondModal}
+                    transparent={true}
+                    animationType="slide"
+                >
+                    <View style={styles.customModalContainer}>
+                        <View style={styles.customModalContent}>
+                            <Text style={styles.modalTitle}>Select Upload Type</Text>
+                            <TouchableOpacity
+                                onPress={handleUploadPDFReport}
+                                style={styles.uploadOption}
+                            >
+                                <Text style={styles.uploadOptionText}>Upload PDF</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={styles.button}
-                                onPress={() => navigation.navigate("sharereport")}
+                                onPress={handleUploadImageReport}
+                                style={[styles.uploadOption, styles.lastUploadOption]}
                             >
-                                <MaterialIcons
-                                    name="share"
-                                    size={24}
-                                    color="#0198A5"
-                                    style={styles.icon}
-                                />
-                                <Text style={styles.buttonText}>Share with Doctor</Text>
+                                <Text style={styles.uploadOptionText}>Upload Image</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.modalClose}
+                                onPress={() => setShowSecondModal(false)}
+                            >
+                                <Text style={styles.modalCloseText}>&times;</Text>
                             </TouchableOpacity>
                         </View>
-                        <View style={styles.divider} />
-                        <ImageBackground source={backgroundImage}>
-                            <View style={{ paddingTop: 10 }}>
-                                <Text style={{ fontSize: 20 }}>Your Reports</Text>
-                            </View>
-                            <View style={styles.filterContainer}>
-                                <TouchableOpacity
-                                    onPress={() => handleSpanClick("All")}
-                                    style={[
-                                        styles.filterButton,
-                                        activeSpan === "All" && styles.activeFilter,
-                                    ]}
-                                >
-                                    <Text style={styles.filterText}>All</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => handleSpanClick("Blood test")}
-                                    style={[
-                                        styles.filterButton,
-                                        activeSpan === "Blood test" && styles.activeFilter,
-                                    ]}
-                                >
-                                    <Text style={styles.filterText}>Blood test</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => handleSpanClick("Radiology")}
-                                    style={[
-                                        styles.filterButton,
-                                        activeSpan === "Radiology" && styles.activeFilter,
-                                    ]}
-                                >
-                                    <Text style={styles.filterText}>Radiology</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => handleSpanClick("Pathology")}
-                                    style={[
-                                        styles.filterButton,
-                                        activeSpan === "Pathology" && styles.activeFilter,
-                                    ]}
-                                >
-                                    <Text style={styles.filterText}>Pathology</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <FlatList
-                                data={filteredReports}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item }) => (
-                                    <View style={styles.reportItem}>
-                                        <View style={styles.reportLeftContainer}>
-                                            <Text style={styles.reportTitle}>
-                                                Report Name: {item.test_name}
-                                            </Text>
-                                            <Text style={styles.reportSubtitle}>
-                                                Test Type: {item.test_type}
-                                            </Text>
-                                            <TouchableOpacity
-                                                style={styles.btn}
-                                                onPress={() => handleDownload(item.unique_file_path_name)}
-                                            >
-                                                <Text style={styles.btnText}>Download</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                        <View style={styles.reportRightContainer}>
-                                            <Text
-                                                style={[
-                                                    styles.testType,
-                                                    {
-                                                        backgroundColor: getTestTypeColor(item.test_type)
-                                                            .bgColor,
-                                                        color: getTestTypeColor(item.test_type).textColor,
-                                                    },
-                                                ]}
-                                            >
-                                                {item.test_type}
-                                            </Text>
-                                            <Text style={styles.reportDate}>
-                                                {item.extracted_date}
-                                            </Text>
-                                            <TouchableOpacity
-                                                style={styles.btnView}
-                                                onPress={() => handleView(item.unique_file_path_name)}
-                                            >
-                                                <Text style={styles.btnViewColor}>View</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                )}
-                                contentContainerStyle={{ paddingBottom: 70 }}
-                            />
-                        </ImageBackground>
-                        <Modal visible={showModal} transparent={true} animationType="slide">
-                            <View style={styles.modalContainer}>
-                                <View style={styles.modalContent}>
-                                    <TouchableOpacity
-                                        style={styles.modalClose}
-                                        onPress={() => setShowModal(false)}
-                                    >
-                                        <Text style={styles.modalCloseText}>&times;</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.modalTitle}>Upload a new Report</Text>
-                                    <TouchableOpacity
-                                        style={styles.uploadButton}
-                                        onPress={handleUploadOption}
-                                    >
-                                        <Text style={styles.uploadButtonText}>From Phone</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.orText}>OR</Text>
-                                    <TouchableOpacity
-                                        style={styles.uploadButton}
-                                        onPress={handleCaptureImage}
-                                    >
-                                        <Text style={styles.uploadButtonText}>Scan report</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </Modal>
-
-                        <Modal
-                            visible={showSecondModal}
-                            transparent={true}
-                            animationType="slide"
-                        >
-                            <View style={styles.customModalContainer}>
-                                <View style={styles.customModalContent}>
-                                    <Text style={styles.modalTitle}>Select Upload Type</Text>
-                                    <TouchableOpacity
-                                        onPress={handleUploadPDFReport}
-                                        style={styles.uploadOption}
-                                    >
-                                        <Text style={styles.uploadOptionText}>Upload PDF</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        onPress={handleUploadImageReport}
-                                        style={[styles.uploadOption, styles.lastUploadOption]}
-                                    >
-                                        <Text style={styles.uploadOptionText}>Upload Image</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style={styles.modalClose}
-                                        onPress={() => setShowSecondModal(false)}
-                                    >
-                                        <Text style={styles.modalCloseText}>&times;</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </Modal>
                     </View>
-                </ScrollView>
+                </Modal>
                 <View style={styles.tabContainer}>
                     <TouchableOpacity
                         style={styles.tab}
@@ -462,10 +463,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "rgba(255, 255, 255, 1)",
         padding: 5,
-    },
-    scrollViewContent: {
-        flexGrow: 1,
-        paddingBottom: 70,
     },
     container: { flex: 1, padding: 20 },
     profileContainer: { alignItems: "center", marginVertical: 20 },
