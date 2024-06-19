@@ -18,7 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as FileSystem from 'expo-file-system';
 import * as DocumentPicker from "expo-document-picker";
-const backgroundImage = require("../assets/images/transparent-bg.png");
+const backgroundImage = require("../assets/images/transparentbg.png");
 const whiteimg = require("../assets/images/white.png");
 
 type Report = {
@@ -416,7 +416,7 @@ const Dashboard = () => {
                         style={styles.tab}
                         onPress={() => {
                             setActiveTab("Profile");
-                            navigation.navigate("Profile");
+                            // navigation.navigate("Profile");
                         }}
                     >
                         <MaterialIcons

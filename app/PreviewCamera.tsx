@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     View,
     Text,
@@ -7,6 +7,7 @@ import {
     Image,
     Alert,
     Dimensions,
+    ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -31,6 +32,7 @@ const PreviewCamera = () => {
     const navigation = useNavigation();
     const { file, userName } = route.params;
     const soundRef = useRef<Audio.Sound | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
 
     // Load the sound file
     useEffect(() => {
@@ -51,12 +53,13 @@ const PreviewCamera = () => {
     }, []);
 
     const handleUpload = async () => {
+        setLoading(true);
         const formData = new FormData();
         formData.append('user_name', userName);
         formData.append('file', {
             uri: file.uri,
             type: 'image/jpeg',
-            name: file.uri.split('/').pop()
+            name: file.uri.split('/').pop(),
         });
 
         try {
@@ -72,8 +75,9 @@ const PreviewCamera = () => {
                 if (soundRef.current) {
                     await soundRef.current.replayAsync();
                 }
-                Alert.alert('Success', 'File uploaded successfully');
-                navigation.navigate('Dashboard'); // Navigate back to dashboard after upload
+                Alert.alert('Success', 'File uploaded successfully', [
+                    { text: 'OK', onPress: () => navigation.navigate('Dashboard') }
+                ]);
             } else {
                 const responseText = await response.text();
                 console.error('Upload failed with response:', responseText);
@@ -82,6 +86,8 @@ const PreviewCamera = () => {
         } catch (error) {
             console.error("Error uploading file:", error);
             Alert.alert('Upload Error', `There was an issue uploading the file: ${error.message}`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -92,9 +98,13 @@ const PreviewCamera = () => {
                 <Image source={{ uri: file.uri }} style={styles.image} resizeMode="contain" />
                 <Text>Dimensions: {file.width} x {file.height}</Text>
             </View>
-            <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
-                <Text style={styles.uploadButtonText}>Upload File</Text>
-            </TouchableOpacity>
+            {loading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+                <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
+                    <Text style={styles.uploadButtonText}>Upload File</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/adaptiveicon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.sudsrk.shrinkhala"

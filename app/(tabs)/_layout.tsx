@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const { height: viewportHeight } = Dimensions.get('window');
 
 // Import the image directly
-const backgroundImage = require('../../assets/images/SplashScreen-bg.png');
+const backgroundImage = require('../../assets/images/splashscreenbg.jpg');
 
 const Logo: React.FC = () => {
     const router = useRouter();

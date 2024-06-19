@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, Text, TouchableOpacity, Alert, Linking } from 'react-native';
-import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
-
-type RouteParams = {
-    PreviewPDF: {
-        uri: string;
-        userName: string;
-    };
-};
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Audio } from 'expo-av';
 
 const PreviewPDF: React.FC = () => {
-    const route = useRoute<RouteProp<RouteParams, 'PreviewPDF'>>();
-    const { uri, userName } = route.params;
+    const { uri, userName } = useLocalSearchParams() as { uri: string; userName: string };
     const [fileUri, setFileUri] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const navigation = useNavigation();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [sound, setSound] = useState<Audio.Sound | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
         console.log('URI in PreviewPDF:', uri);
@@ -28,44 +23,24 @@ const PreviewPDF: React.FC = () => {
         setFileUri(uri);
     }, [uri]);
 
-    const openWithOtherApps = () => {
-        if (fileUri) {
-            Linking.openURL(fileUri);
-        }
-    };
-
-    const downloadPDF = async () => {
-        try {
-            const { status } = await MediaLibrary.requestPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Permission Denied', 'Permission to access media library is required!');
-                return;
+    useEffect(() => {
+        return sound
+            ? () => {
+                console.log('Unloading Sound');
+                sound.unloadAsync();
             }
+            : undefined;
+    }, [sound]);
 
-            const fileName = fileUri!.split('/').pop();
-            const destinationUri = FileSystem.documentDirectory + fileName;
-
-            await FileSystem.copyAsync({
-                from: fileUri!,
-                to: destinationUri,
-            });
-
-            const asset = await MediaLibrary.createAssetAsync(destinationUri);
-            const album = await MediaLibrary.getAlbumAsync('Download');
-            if (album == null) {
-                await MediaLibrary.createAlbumAsync('Download', asset, false);
-            } else {
-                await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
-            }
-
-            Alert.alert('Download Complete', 'PDF has been downloaded and saved to your device.');
-        } catch (error) {
-            console.error('Error downloading file:', error);
-            Alert.alert('Download Error', 'There was an issue downloading the file.');
-        }
+    const playSound = async () => {
+        const { sound } = await Audio.Sound.createAsync(
+            require('../assets/success.mp3')        );
+        setSound(sound);
+        await sound.playAsync();
     };
 
     const handleUpload = async () => {
+        setLoading(true);
         try {
             const fileInfo = await FileSystem.getInfoAsync(fileUri!);
             if (fileInfo.exists) {
@@ -86,8 +61,10 @@ const PreviewPDF: React.FC = () => {
                 });
 
                 if (response.ok) {
-                    Alert.alert('Success', 'PDF uploaded successfully');
-                    navigation.navigate('Dashboard'); // Navigate back to dashboard after upload
+                    await playSound();
+                    Alert.alert('Success', 'PDF uploaded successfully', [
+                        { text: 'OK', onPress: () => router.push('/Dashboard') }
+                    ]);
                 } else {
                     const responseText = await response.text();
                     console.error('Upload failed with response:', responseText);
@@ -100,6 +77,8 @@ const PreviewPDF: React.FC = () => {
         } catch (error) {
             console.error("Error uploading file:", error);
             Alert.alert('Upload Error', `There was an issue uploading the file: ${error.message}`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -121,16 +100,20 @@ const PreviewPDF: React.FC = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.infoText}>PDF Viewer is in progress,But still you can upload PDF</Text>
+            <Text style={styles.infoText}>PDF Viewer is in progress, but you can still upload PDF</Text>
             {/*<TouchableOpacity style={styles.button} onPress={openWithOtherApps}>*/}
             {/*    <Text style={styles.buttonText}>Open with Other Apps</Text>*/}
             {/*</TouchableOpacity>*/}
             {/*<TouchableOpacity style={styles.button} onPress={downloadPDF}>*/}
             {/*    <Text style={styles.buttonText}>Download PDF</Text>*/}
             {/*</TouchableOpacity>*/}
-            <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
-                <Text style={styles.buttonText}>Upload PDF</Text>
-            </TouchableOpacity>
+            {loading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+                <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
+                    <Text style={styles.buttonText}>Upload PDF</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

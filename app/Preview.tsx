@@ -11,6 +11,8 @@ import {
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+
 
 const screenWidth = Dimensions.get('window').width; // Get screen width for dynamic sizing
 
@@ -30,6 +32,8 @@ const Preview = () => {
     const navigation = useNavigation();
     const { file, userName } = route.params;
     const soundRef = useRef<Audio.Sound | null>(null);
+    const router = useRouter();
+
 
     // Load the sound file
     useEffect(() => {
@@ -71,8 +75,9 @@ const Preview = () => {
                 if (soundRef.current) {
                     await soundRef.current.replayAsync();
                 }
-                Alert.alert('Success', 'File uploaded successfully');
-                // navigation.navigate('dashboard'); // Navigate back to dashboard after upload
+                Alert.alert('Success', 'File uploaded successfully',[
+                    { text: 'OK', onPress: () => router.push('/Dashboard') }
+                ]);
             } else {
                 const responseText = await response.text();
                 console.error('Upload failed with response:', responseText);
