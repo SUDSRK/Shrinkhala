@@ -16,9 +16,9 @@ const Logo: React.FC = () => {
         setTextVisible(false);
         const username = await AsyncStorage.getItem('userName');
         if (username) {
-            router.push('/dashboard');
+            router.push('/Dashboard');
         } else {
-            router.push('/loginorsignup');
+            router.push('/LoginOrSignUp');
         }
     };
 

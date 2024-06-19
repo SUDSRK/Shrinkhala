@@ -9,18 +9,18 @@ const logoWidth = width * 0.8; // Adjust the width of the logo relative to the s
 const LoginOrSignUp: React.FC = () => {
     return (
         <View style={styles.container}>
-            <Link href="/loginpage" asChild>
+            <Link href="/LoginPage" asChild>
                 <TouchableOpacity>
                     <Image source={require('../assets/images/7317079.jpg')} style={styles.logo} />
                 </TouchableOpacity>
             </Link>
             <View style={styles.nav}>
-                <Link href="/loginpage" asChild>
+                <Link href="/LoginPage" asChild>
                     <TouchableOpacity style={styles.button}>
                         <Text style={styles.buttonText}>Login</Text>
                     </TouchableOpacity>
                 </Link>
-                <Link href="/signup" asChild>
+                <Link href="/SignUp" asChild>
                     <TouchableOpacity style={styles.button}>
                         <Text style={styles.buttonText}>Signup</Text>
                     </TouchableOpacity>
