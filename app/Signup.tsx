@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from 'reac
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const SignUp: React.FC = () => {
+const Signup: React.FC = () => {
     const [inputValue, setInputValue] = useState<string>('');
     const [isValid, setIsValid] = useState<boolean>(true);
     const [numberErrorMsg, setNumberErrorMsg] = useState<string>('');
@@ -147,4 +147,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SignUp;
+export default Signup;

@@ -18,7 +18,7 @@ const Logo: React.FC = () => {
         if (username) {
             router.push('/Dashboard');
         } else {
-            router.push('/LoginOrSignUp');
+            router.push('/Welcome');
         }
     };
 

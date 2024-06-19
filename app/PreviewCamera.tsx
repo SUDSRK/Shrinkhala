@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -7,12 +7,13 @@ import {
     Image,
     Alert,
     Dimensions,
-    ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+
 
 const screenWidth = Dimensions.get('window').width; // Get screen width for dynamic sizing
 
@@ -32,7 +33,7 @@ const PreviewCamera = () => {
     const navigation = useNavigation();
     const { file, userName } = route.params;
     const soundRef = useRef<Audio.Sound | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
+    const router = useRouter();
 
     // Load the sound file
     useEffect(() => {
@@ -53,17 +54,16 @@ const PreviewCamera = () => {
     }, []);
 
     const handleUpload = async () => {
-        setLoading(true);
         const formData = new FormData();
         formData.append('user_name', userName);
         formData.append('file', {
             uri: file.uri,
-            type: 'image/jpeg',
-            name: file.uri.split('/').pop(),
+            type: 'image/jpeg', // Assuming the captured photo is in JPEG format
+            name: file.uri.split('/').pop(), // Extract file name from URI
         });
 
         try {
-            const response = await fetch("https://extract.shrinkhala.in/extract", {
+            const response = await fetch("http://34.16.227.186:5000/extract", {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -75,8 +75,8 @@ const PreviewCamera = () => {
                 if (soundRef.current) {
                     await soundRef.current.replayAsync();
                 }
-                Alert.alert('Success', 'File uploaded successfully', [
-                    { text: 'OK', onPress: () => navigation.navigate('Dashboard') }
+                Alert.alert('Success', 'File uploaded successfully',[
+                    { text: 'OK', onPress: () => router.push('/Dashboard') }
                 ]);
             } else {
                 const responseText = await response.text();
@@ -86,8 +86,6 @@ const PreviewCamera = () => {
         } catch (error) {
             console.error("Error uploading file:", error);
             Alert.alert('Upload Error', `There was an issue uploading the file: ${error.message}`);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -98,13 +96,9 @@ const PreviewCamera = () => {
                 <Image source={{ uri: file.uri }} style={styles.image} resizeMode="contain" />
                 <Text>Dimensions: {file.width} x {file.height}</Text>
             </View>
-            {loading ? (
-                <ActivityIndicator size="large" color="#0000ff" />
-            ) : (
-                <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
-                    <Text style={styles.uploadButtonText}>Upload File</Text>
-                </TouchableOpacity>
-            )}
+            <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
+                <Text style={styles.uploadButtonText}>Upload File</Text>
+            </TouchableOpacity>
         </View>
     );
 };

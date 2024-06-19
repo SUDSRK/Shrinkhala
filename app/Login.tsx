@@ -75,7 +75,7 @@ const Login: React.FC = () => {
                     AsyncStorage.setItem('fullName', `${first_name} ${last_name}`);
 
                     // Navigate to dashboard upon successful login
-                    router.push('/dashboard');
+                    router.push('/Dashboard');
                 })
                 .catch(error => {
                     // Handle error
@@ -142,7 +142,7 @@ const Login: React.FC = () => {
                 </Link>
                 <Text style={styles.signUpText}>
                     Don't have an account?{' '}
-                    <Link href="/SignUp" asChild>
+                    <Link href="/app/Signup" asChild>
                         <Text style={styles.signUpLink}>Sign Up</Text>
                     </Link>
                 </Text>

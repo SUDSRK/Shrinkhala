@@ -6,21 +6,21 @@ const { width, height } = Dimensions.get('window');
 const logoHeight = height * 0.4; // Adjust the height of the logo relative to the screen height
 const logoWidth = width * 0.8; // Adjust the width of the logo relative to the screen width
 
-const LoginOrSignUp: React.FC = () => {
+const Welcome: React.FC = () => {
     return (
         <View style={styles.container}>
-            <Link href="/LoginPage" asChild>
+            <Link href="/Login" asChild>
                 <TouchableOpacity>
                     <Image source={require('../assets/images/7317079.jpg')} style={styles.logo} />
                 </TouchableOpacity>
             </Link>
             <View style={styles.nav}>
-                <Link href="/LoginPage" asChild>
+                <Link href="/Login" asChild>
                     <TouchableOpacity style={styles.button}>
                         <Text style={styles.buttonText}>Login</Text>
                     </TouchableOpacity>
                 </Link>
-                <Link href="/SignUp" asChild>
+                <Link href="/Signup" asChild>
                     <TouchableOpacity style={styles.button}>
                         <Text style={styles.buttonText}>Signup</Text>
                     </TouchableOpacity>
@@ -75,4 +75,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default LoginOrSignUp;
+export default Welcome;
