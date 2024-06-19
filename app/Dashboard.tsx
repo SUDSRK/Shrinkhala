@@ -128,7 +128,7 @@ const Dashboard = () => {
                         });
                         console.log(fileContent);
                         const base64DataUri = `data:application/pdf;base64,${fileContent}`;
-                        navigation.navigate("previewpdf", { uri: base64DataUri });
+                        navigation.navigate("PreviewPDF", { uri: base64DataUri });
                     } else {
                         console.error("Error: File does not exist");
                     }
@@ -157,7 +157,7 @@ const Dashboard = () => {
             };
 
             closeModal();
-            navigation.navigate('preview', { file, userName });
+            navigation.navigate('Preview', { file, userName });
         } else {
             Alert.alert('No file selected', 'Please select a file.');
         }

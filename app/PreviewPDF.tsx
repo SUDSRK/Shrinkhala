@@ -56,7 +56,7 @@ const PreviewPDF: React.FC = () => {
 
                 if (response.ok) {
                     Alert.alert('Success', 'PDF uploaded successfully');
-                    navigation.navigate('dashboard'); // Navigate back to dashboard after upload
+                    navigation.navigate('Dashboard'); // Navigate back to dashboard after upload
                 } else {
                     const responseText = await response.text();
                     console.error('Upload failed with response:', responseText);

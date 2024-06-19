@@ -73,7 +73,7 @@ const PreviewCamera = () => {
                     await soundRef.current.replayAsync();
                 }
                 Alert.alert('Success', 'File uploaded successfully');
-                navigation.navigate('dashboard'); // Navigate back to dashboard after upload
+                navigation.navigate('Dashboard'); // Navigate back to dashboard after upload
             } else {
                 const responseText = await response.text();
                 console.error('Upload failed with response:', responseText);
