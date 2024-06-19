@@ -28,12 +28,11 @@ const ReportViewer: React.FC = () => {
                     javaScriptEnabled={true}
                 />
             );
-        } else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileType || '')) {
-            return <Image source={{ uri: url }} style={styles.image} />;
         } else {
-            return <Text>Unsupported file type</Text>;
+            return <Image source={{ uri: url }} style={styles.image} />;
         }
     };
+
 
     return (
         <View style={styles.container}>

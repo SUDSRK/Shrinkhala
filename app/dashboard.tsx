@@ -16,8 +16,8 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialIcons } from "@expo/vector-icons";
+import * as FileSystem from 'expo-file-system';
 import * as DocumentPicker from "expo-document-picker";
-
 const backgroundImage = require("../assets/images/transparent-bg.png");
 const whiteimg = require("../assets/images/white.png");
 
@@ -53,7 +53,6 @@ const Dashboard = () => {
     const [cameraVisible, setCameraVisible] = useState<boolean>(false);
     const [cameraType, setCameraType] = useState<'back' | 'front'>('back');
     const [permission, requestPermission] = useCameraPermissions();
-
     const navigation = useNavigation();
     const cameraRef = useRef(null);
 
@@ -73,7 +72,6 @@ const Dashboard = () => {
                 console.error('Failed to load user data from storage', error);
             }
         };
-
         fetchUserData();
     }, []);
 
@@ -119,11 +117,21 @@ const Dashboard = () => {
             const result = await DocumentPicker.getDocumentAsync({
                 type: "application/pdf",
             });
-            if (result.type === "success") {
-                const pdfFile = result.uri;
-                if (pdfFile) {
-                    setPdfSource(pdfFile);
-                    navigation.navigate("PreviewPDF", { uri: pdfFile });
+            console.log(result);
+            if (!result.canceled) {
+                const pdfFileUri = result.assets[0].uri;
+                if (pdfFileUri) {
+                    const fileInfo = await FileSystem.getInfoAsync(pdfFileUri);
+                    if (fileInfo.exists) {
+                        const fileContent = await FileSystem.readAsStringAsync(pdfFileUri, {
+                            encoding: FileSystem.EncodingType.Base64,
+                        });
+                        console.log(fileContent);
+                        const base64DataUri = `data:application/pdf;base64,${fileContent}`;
+                        navigation.navigate("previewpdf", { uri: base64DataUri });
+                    } else {
+                        console.error("Error: File does not exist");
+                    }
                 } else {
                     console.error("Error: PDF data is null");
                 }
@@ -133,18 +141,27 @@ const Dashboard = () => {
         }
     };
 
+
     const handleUploadImageReport = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsMultipleSelection: true,
+            allowsMultipleSelection: false, // Allow only single selection
         });
 
-        if (!result.canceled) {
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            const selectedFile = result.assets[0];
+            const file = {
+                uri: selectedFile.uri,
+                type: selectedFile.mimeType,
+                name: selectedFile.fileName || `file_${Date.now()}`, // Assign a default name if not provided
+            };
+
             closeModal();
-            navigation.navigate("preview", { selectedFiles: result.assets, userName });
+            navigation.navigate('preview', { file, userName });
+        } else {
+            Alert.alert('No file selected', 'Please select a file.');
         }
     };
-
     const handleCaptureImage = async () => {
         if (!permission) {
             return;
@@ -202,11 +219,11 @@ const Dashboard = () => {
 
     const handleTakePicture = async () => {
         if (cameraRef.current) {
-            const photo = await cameraRef.current.takePictureAsync();
-            setCameraVisible(false);
-            closeModal();
-            navigation.navigate("preview", { selectedFiles: [photo], userName });
-        }
+        const photo = await cameraRef.current.takePictureAsync();
+        console.log(photo);
+        setCameraVisible(false);
+        navigation.navigate("PreviewCamera", { file: photo, userName });
+    }
     };
 
     const toggleCameraType = () => {

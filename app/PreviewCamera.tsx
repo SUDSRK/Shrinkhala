@@ -11,22 +11,23 @@ import {
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
 
 const screenWidth = Dimensions.get('window').width; // Get screen width for dynamic sizing
 
 type RouteParams = {
-    Preview: {
+    PreviewCamera: {
         file: {
             uri: string;
-            type: string;
-            name: string;
+            height: number;
+            width: number;
         };
         userName: string;
     };
 };
 
-const Preview = () => {
-    const route = useRoute<RouteProp<RouteParams, 'Preview'>>();
+const PreviewCamera = () => {
+    const route = useRoute<RouteProp<RouteParams, 'PreviewCamera'>>();
     const navigation = useNavigation();
     const { file, userName } = route.params;
     const soundRef = useRef<Audio.Sound | null>(null);
@@ -54,8 +55,8 @@ const Preview = () => {
         formData.append('user_name', userName);
         formData.append('file', {
             uri: file.uri,
-            type: file.type,
-            name: file.name,
+            type: 'image/jpeg',
+            name: file.uri.split('/').pop()
         });
 
         try {
@@ -72,7 +73,7 @@ const Preview = () => {
                     await soundRef.current.replayAsync();
                 }
                 Alert.alert('Success', 'File uploaded successfully');
-                // navigation.navigate('dashboard'); // Navigate back to dashboard after upload
+                navigation.navigate('dashboard'); // Navigate back to dashboard after upload
             } else {
                 const responseText = await response.text();
                 console.error('Upload failed with response:', responseText);
@@ -86,19 +87,10 @@ const Preview = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Preview Selected File</Text>
+            <Text style={styles.title}>Preview Captured Image</Text>
             <View style={styles.fileContainer}>
-                {file.type === 'application/pdf' ? (
-                    <TouchableOpacity
-                        style={styles.previewButton}
-                        onPress={() => navigation.navigate('PreviewPDF', { uri: file.uri })}
-                    >
-                        <MaterialIcons name="picture-as-pdf" size={100} color="red" />
-                        <Text>PDF File</Text>
-                    </TouchableOpacity>
-                ) : (
-                    <Image source={{ uri: file.uri }} style={styles.image} resizeMode="contain" />
-                )}
+                <Image source={{ uri: file.uri }} style={styles.image} resizeMode="contain" />
+                <Text>Dimensions: {file.width} x {file.height}</Text>
             </View>
             <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
                 <Text style={styles.uploadButtonText}>Upload File</Text>
@@ -137,4 +129,4 @@ const styles = StyleSheet.create({
     uploadButtonText: { color: 'white', fontSize: 16 },
 });
 
-export default Preview;
+export default PreviewCamera;
