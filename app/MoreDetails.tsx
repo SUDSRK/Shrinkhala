@@ -320,9 +320,9 @@ const MoreDetails: React.FC = () => {
         <Text style={styles.submitButtonText}>Submit</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={backButtonHandler}>
-        <Text style={styles.laterText}>Do it later</Text>
-      </TouchableOpacity>
+      {/*<TouchableOpacity onPress={backButtonHandler}>*/}
+      {/*  <Text style={styles.laterText}>Do it later</Text>*/}
+      {/*</TouchableOpacity>*/}
     </ScrollView>
   );
 };

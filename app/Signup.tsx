@@ -16,7 +16,7 @@ const Signup: React.FC = () => {
     };
 
     const backButtonHandler = () => {
-        router.push('/login');
+        router.push('/Login');
     };
 
     const numberSubmit = async () => {
@@ -25,7 +25,7 @@ const Signup: React.FC = () => {
         if (inputValue.length === 10) {
             setNumberError(false);
             await AsyncStorage.setItem('phoneNumber', inputValue);
-            router.push({ pathname: '/OtpScreen', params: { phoneNumber: inputValue } });
+            router.push({ pathname: '/OTP', params: { phoneNumber: inputValue } });
         } else {
             setNumberError(true);
             setNumberErrorMsg('Please enter a 10 digit phone number.');

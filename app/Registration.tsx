@@ -51,7 +51,7 @@ interface FormData {
   careRelation: string;
 }
 
-const RegistrationForm: React.FC<RegistrationFormProps> = () => {
+const Registration: React.FC<RegistrationFormProps> = () => {
     const router = useRouter();
     const route = useRoute();
     const { phoneNumber } = route.params as { phoneNumber: string };
@@ -452,4 +452,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegistrationForm;
+export default Registration;

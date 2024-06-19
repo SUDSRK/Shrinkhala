@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'reac
 import { Link, useRouter } from 'expo-router';
 import { useRoute } from '@react-navigation/native';
 
-const OtpScreen = () => {
+const OTP = () => {
     const router = useRouter();
     const route = useRoute();
     const { phoneNumber } = route.params as { phoneNumber: string };
@@ -39,7 +39,7 @@ const OtpScreen = () => {
 
         if (otpString === "7044") {
             setIsSubmitting(false);
-            router.push({ pathname: '/RegistrationForm', params: { phoneNumber } });
+            router.push({ pathname: '/Registration', params: { phoneNumber } });
         } else {
             setIsSubmitting(false);
             setIncorrectOtp("Incorrect OTP");
@@ -141,4 +141,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default OtpScreen;
+export default OTP;
