@@ -83,7 +83,7 @@ const Dashboard = () => {
 
     const fetchReports = async () => {
         try {
-            const response = await fetch(`http://34.16.227.186:5000/reports/${userName}`);
+            const response = await fetch(`https://extract.shrinkhala.in/reports/${userName}`);
             const data = await response.json();
             setReports(data);
         } catch (error) {
@@ -123,12 +123,7 @@ const Dashboard = () => {
                 if (pdfFileUri) {
                     const fileInfo = await FileSystem.getInfoAsync(pdfFileUri);
                     if (fileInfo.exists) {
-                        const fileContent = await FileSystem.readAsStringAsync(pdfFileUri, {
-                            encoding: FileSystem.EncodingType.Base64,
-                        });
-                        console.log(fileContent);
-                        const base64DataUri = `data:application/pdf;base64,${fileContent}`;
-                        navigation.navigate("PreviewPDF", { uri: base64DataUri });
+                        navigation.navigate("PreviewPDF", { uri: pdfFileUri, userName });
                     } else {
                         console.error("Error: File does not exist");
                     }

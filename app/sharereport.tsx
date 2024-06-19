@@ -67,7 +67,7 @@ const ShareReport = () => {
 
     useEffect(() => {
         if (userName) {
-            fetch(`http://34.131.227.229:8081/patient/${userName}/doctors`, {
+            fetch(`https://api.shrinkhala.in/patient/${userName}/doctors`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -88,7 +88,7 @@ const ShareReport = () => {
     }, [userName]);
 
     const handleRemoveDoctor = (doctorId: string) => {
-        fetch(`http://34.131.227.229:8081/patient/${userName}/doctors/${doctorId}`, {
+        fetch(`https://api.shrinkhala.in/patient/${userName}/doctors/${doctorId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -109,7 +109,7 @@ const ShareReport = () => {
         if (data) {
             const scannedText = JSON.parse(data);
 
-            fetch('http://34.131.227.229:8081/doctor/patient', {
+            fetch('https://api.shrinkhala.in/doctor/patient', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -137,7 +137,7 @@ const ShareReport = () => {
     };
 
     const handleGenerateOTP = () => {
-        fetch('http://34.131.227.229:8081/patient/generate_otp', {
+        fetch('https://api.shrinkhala.in/patient/generate_otp', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

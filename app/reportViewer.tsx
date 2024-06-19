@@ -20,7 +20,9 @@ const ReportViewer: React.FC = () => {
     // Render PDF or image based on the file type
     const renderFile = () => {
         if (fileType === 'pdf') {
-            return (
+            setTimeout(() => {
+                navigation.navigate('Dashboard'); // Navigate back to dashboard after upload with delay
+            }, 2000);             return (
                 <WebView
                     source={{ uri: url }}
                     style={styles.webview}
@@ -36,11 +38,6 @@ const ReportViewer: React.FC = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Text style={styles.backButtonText}>Back</Text>
-                </TouchableOpacity>
-            </View>
             <View style={styles.content}>
                 {renderFile()}
             </View>
