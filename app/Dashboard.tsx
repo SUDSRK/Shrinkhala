@@ -259,7 +259,7 @@ const Dashboard = () => {
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={styles.button}
-                                        onPress={() => navigation.navigate("sharereport")}
+                                        onPress={() => navigation.navigate("ShareReport")}
                                     >
                                         <MaterialIcons
                                             name="share"
