@@ -77,11 +77,11 @@ const MoreDetails: React.FC = () => {
     setIsChecked(newValue);
     console.log(newValue+"---");
     
-    if(newValue===true) {
+    if(newValue) {
       setHideInputs(true);
       handleChangeLocal('sameAddress','true');
     }
-    else if(newValue===false) {
+    else if(!newValue) {
       setHideInputs(false);
       handleChangeLocal('sameAddress','false');
     }
@@ -170,9 +170,6 @@ const MoreDetails: React.FC = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        {/* <TouchableOpacity onPress={backButtonHandler}>
-          <Image source={require('../assets/images/back.png')} style={styles.backImage} />
-        </TouchableOpacity> */}
         <Text style={styles.title}>Shrinkhala</Text>
       </View>
       <Text style={styles.subtitle}>Please share more details</Text>
@@ -252,8 +249,10 @@ const MoreDetails: React.FC = () => {
           value={isChecked}
           onValueChange={handleCheckboxChange}
         /> */}
-        <BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {handleCheckboxChange(isChecked)}} />
+        {/*<BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {handleCheckboxChange(isChecked)}} />*/}
         <Text style={styles.checkboxLabel}>Same as Patient</Text>
+        <BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {handleCheckboxChange(isChecked)}} />
+
       </View>
       {!hideInputs&&(
         <>
@@ -308,8 +307,8 @@ const MoreDetails: React.FC = () => {
           value={isChecked}
           onValueChange={handleCheckboxChange}
         /> */}
-        <BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {}} />
         <Text style={styles.checkboxLabel}>I agree to the Terms and Conditions</Text>
+        <BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {}} />
       </View>
 
       <TouchableOpacity
@@ -398,7 +397,8 @@ const styles = StyleSheet.create({
   checkboxLabel: {
     fontSize: 16,
     paddingVertical: 4,
-    // fontWeight: 'bold',
+    paddingHorizontal: 4,
+    color: '#0198A5',
   },
   submitButton: {
     backgroundColor: '#0198A5',

@@ -63,7 +63,7 @@ const PreviewCamera = () => {
         });
 
         try {
-            const response = await fetch("http://34.16.227.186:5000/extract", {
+            const response = await fetch("https://extract.shrinkhala.in/extract", {
                 method: 'POST',
                 body: formData,
                 headers: {
