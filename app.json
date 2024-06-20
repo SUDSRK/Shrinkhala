@@ -4,11 +4,11 @@
     "slug": "Shrinkhala",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/app_photo.jpg",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/splashscreenbg.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

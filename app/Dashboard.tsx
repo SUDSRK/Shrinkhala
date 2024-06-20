@@ -468,12 +468,13 @@ const Dashboard = () => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        marginTop: 25,
+        // marginTop: 25,
     },
     backgroundImage: {
         flex: 1,
         resizeMode: "contain",
         height: 100,
+        paddingTop: 20,
     },
     overlay: {
         flex: 1,
