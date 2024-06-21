@@ -266,7 +266,7 @@ const Dashboard = () => {
                                     </TouchableOpacity>
                                 </View>
                                 <View style={styles.divider} />
-                                <ImageBackground source={backgroundImage}>
+                                <ImageBackground source={backgroundImage} resizeMode="cover">
                                     <View style={{ paddingTop: 10 }}>
                                         <Text style={{ fontSize: 20 }}>Your Reports</Text>
                                     </View>
@@ -308,12 +308,15 @@ const Dashboard = () => {
                                             <Text style={styles.filterText}>Pathology</Text>
                                         </TouchableOpacity>
                                     </View>
+                                    
                                 </ImageBackground>
                             </View>
                         </>
                     )}
                     renderItem={({ item }) => (
-                        <View style={styles.reportItem}>
+                        <ImageBackground source={whiteimg} style={styles.backgroundImage2}>
+                        <ImageBackground source={backgroundImage} resizeMode="cover">
+                            <View style={styles.reportItem}>
                             <View style={styles.reportLeftContainer}>
                                 <Text style={styles.reportTitle}>
                                     Report Name: {item.test_name}
@@ -352,6 +355,9 @@ const Dashboard = () => {
                                 </TouchableOpacity>
                             </View>
                         </View>
+                        </ImageBackground>
+                        </ImageBackground>
+                        
                     )}
                     contentContainerStyle={{ paddingBottom: 70 }}
                 />
@@ -475,6 +481,11 @@ const styles = StyleSheet.create({
         resizeMode: "contain",
         height: 100,
         paddingTop: 20,
+    },
+    backgroundImage2: {
+        flex: 1,
+        resizeMode: "contain",
+        // height: 100,
     },
     overlay: {
         flex: 1,

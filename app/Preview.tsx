@@ -7,6 +7,7 @@ import {
     Image,
     Alert,
     Dimensions,
+    // ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -72,6 +73,7 @@ const Preview = () => {
             });
 
             if (response.ok) {
+                // <ActivityIndicator size="large" color="#0198A5" />
                 if (soundRef.current) {
                     await soundRef.current.replayAsync();
                 }
