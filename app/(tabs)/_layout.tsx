@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,20 +12,28 @@ const Logo: React.FC = () => {
     const router = useRouter();
     const [textVisible, setTextVisible] = useState(true);
 
-    const handleLogoClick = async () => {
-        setTextVisible(false);
-        const username = await AsyncStorage.getItem('userName');
-        if (username) {
-            router.push('/Dashboard');
-        } else {
-            router.push('/Welcome');
-        }
-    };
+    useEffect(() => {
+        const navigate = async () => {
+            setTextVisible(false);
+            const username = await AsyncStorage.getItem('userName');
+            if (username) {
+                router.push('/Dashboard');
+            } else {
+                router.push('/Welcome');
+            }
+        };
+
+        const timer = setTimeout(() => {
+            navigate();
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [router]);
 
     return (
         <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
             <View style={[styles.overlay, { height: viewportHeight }]}>
-                <TouchableOpacity onPress={handleLogoClick}>
+                <TouchableOpacity>
                     <Text style={styles.logo}>Shrinkhala</Text>
                 </TouchableOpacity>
                 <View style={styles.footerContainer}>
