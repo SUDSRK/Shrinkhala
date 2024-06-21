@@ -422,7 +422,7 @@ const Dashboard = () => {
                         style={styles.tab}
                         onPress={() => {
                             setActiveTab("Profile");
-                            // navigation.navigate("Profile");
+                            navigation.navigate("Profile");
                         }}
                     >
                         <MaterialIcons
