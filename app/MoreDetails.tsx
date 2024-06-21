@@ -138,17 +138,17 @@ const MoreDetails: React.FC = () => {
         care_giver_mobile_number: formData.careMobNo,
         care_giver_relation: formData.careRelation,
         same_address: otherFormData.sameAddress,
-        kin_first_name: otherFormData.otherFirstName,
-        kin_last_name: otherFormData.otherLastName,
-        kin_mobile_number: otherFormData.othermobileNumber,
-        kin_relation: otherFormData.otherRelation,
+        Kin_First_name: otherFormData.otherFirstName,
+        Kin_Last_name: otherFormData.otherLastName,
+        Kin_mobile_number: otherFormData.othermobileNumber,
+        Kin_relationship_with_patient: otherFormData.otherRelation,
         care_giver_or_other: otherFormData.caregiverOrOther,
-        c_house_no: otherFormData.kinHouse,
-        c_locality: otherFormData.kinLocality,
-        c_pin_code: otherFormData.kinPincode,
-        c_state: otherFormData.kinState,
-        c_city: otherFormData.kinCity,
-        c_district: otherFormData.kinDistrict
+        Kin_House_no: otherFormData.kinHouse,
+        Kin_Locality: otherFormData.kinLocality,
+        Kin_pin_code: otherFormData.kinPincode,
+        Kin_state: otherFormData.kinState,
+        Kin_city: otherFormData.kinCity,
+        Kin_district: otherFormData.kinDistrict
       }),
       referrerPolicy: 'strict-origin-when-cross-origin'
     })
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: 'black',
     borderRadius: 25,
     marginTop: 10,
     width: '100%',

@@ -405,13 +405,14 @@ const styles = StyleSheet.create({
   },
   datePicker: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: 'black',
+    color: 'grey',
     borderRadius: 25, // Adjusted to be more rounded
     padding: width * 0.03, // Adjusted for better touch target
     paddingHorizontal: 12,
     marginVertical: width * 0.025,
     justifyContent: 'center',
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   row: {
     flexDirection: 'row',
@@ -425,6 +426,8 @@ const styles = StyleSheet.create({
     marginLeft: width * 0.0125,
   },
   picker: {
+    // marginRight: 0,
+    // paddingRight: 40,
     height: width * 0.1,
     marginTop: -12,
   },
@@ -445,7 +448,7 @@ const styles = StyleSheet.create({
   },
   kpicker: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: 'black',
     borderRadius: 25,
     marginTop: 20,
     width: '100%',
