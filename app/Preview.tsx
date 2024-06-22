@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     View,
     Text,
@@ -7,7 +7,7 @@ import {
     Image,
     Alert,
     Dimensions,
-    // ActivityIndicator,
+    ActivityIndicator
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -28,12 +28,17 @@ type RouteParams = {
     };
 };
 
+interface UploadState {
+    isLoading: boolean;
+  }
+
 const Preview = () => {
     const route = useRoute<RouteProp<RouteParams, 'Preview'>>();
     const navigation = useNavigation();
     const { file, userName } = route.params;
     const soundRef = useRef<Audio.Sound | null>(null);
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
 
     // Load the sound file
@@ -55,6 +60,7 @@ const Preview = () => {
     }, []);
 
     const handleUpload = async () => {
+        setIsLoading(true);
         const formData = new FormData();
         formData.append('user_name', userName);
         formData.append('file', {
@@ -73,20 +79,22 @@ const Preview = () => {
             });
 
             if (response.ok) {
-                // <ActivityIndicator size="large" color="#0198A5" />
                 if (soundRef.current) {
                     await soundRef.current.replayAsync();
                 }
+                setIsLoading(false);
                 Alert.alert('Success', 'File uploaded successfully',[
                     { text: 'OK', onPress: () => router.push('/Dashboard') }
                 ]);
             } else {
                 const responseText = await response.text();
                 console.error('Upload failed with response:', responseText);
+                setIsLoading(false);
                 Alert.alert('Upload Error', `Upload failed: ${responseText}`);
             }
         } catch (error) {
             console.error("Error uploading file:", error);
+            setIsLoading(false);
             Alert.alert('Upload Error', `There was an issue uploading the file: ${error.message}`);
         }
     };
@@ -105,6 +113,11 @@ const Preview = () => {
                     </TouchableOpacity>
                 ) : (
                     <Image source={{ uri: file.uri }} style={styles.image} resizeMode="contain" />
+                )}
+                {isLoading && (
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color="#0198A5" />
+                    </View>
                 )}
             </View>
             <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
