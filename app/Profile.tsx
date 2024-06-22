@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, Alert, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, Alert, TouchableOpacity, Platform, Modal } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
@@ -41,6 +41,37 @@ const Profile = () => {
     });
     const [editable, setEditable] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+  const handleButtonClick = () => {
+    setModalVisible(true);
+  };
+
+  const handleConfirm = () => {
+    setModalVisible(false);
+    fetch(`https://api.shrinkhala.in/patient/${userName}`, {
+        method: 'DELETE',
+    })
+        .then((response) => {
+            if (response.ok) {
+                Alert.alert('Success', 'User deleted successfully');
+                // Optionally, you can navigate back or clear the data
+                AsyncStorage.clear();
+                navigation.navigate('Welcome');
+                setData(null);
+            } else {
+                Alert.alert('Error', 'Failed to delete user');
+            }
+        })
+        .catch((error) => console.error(error));
+    // console.log('Confirmed!');
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+    console.log('Cancelled!');
+  };
+
 
     const navigation = useNavigation<NavigationProp<any>>();
     
@@ -90,7 +121,7 @@ const Profile = () => {
     };
 const dateString = "Sun, 04 Mar 2001 00:00:00 GMT";
 const val = data.date_of_birth;
-const initialDate = new Date(dateString);
+const initialDate = new Date(val);
 console.log(data.date_of_birth);
 
 const [date, setDate] = useState<Date>(initialDate);
@@ -104,21 +135,7 @@ const formatDateToYYYYMMDD = (date: Date): string => {
   };
 
     const handleDelete = () => {
-        fetch(`https://api.shrinkhala.in/patient/${userName}`, {
-            method: 'DELETE',
-        })
-            .then((response) => {
-                if (response.ok) {
-                    Alert.alert('Success', 'User deleted successfully');
-                    // Optionally, you can navigate back or clear the data
-                    AsyncStorage.clear();
-                    navigation.navigate('Welcome');
-                    setData(null);
-                } else {
-                    Alert.alert('Error', 'Failed to delete user');
-                }
-            })
-            .catch((error) => console.error(error));
+        setModalVisible(true);
     };
 
     const handleDateChange = (event: any, selectedDate: Date | undefined) => {
@@ -151,12 +168,11 @@ const formatDateToYYYYMMDD = (date: Date): string => {
                     value={String(data.phone_number)}
                     editable={false}
                 />
-                <Text>Whom does this number belong to:</Text>
-                <View style={styles.radioContainer}>
+                {/* <View style={styles.radioContainer}>
                     <View style={styles.radioOption}>
                         <Text>Patient</Text>
                     </View>
-                </View>
+                </View> */}
 
                 <View style={styles.row}>
                     <View style={styles.halfInputContainer}>
@@ -182,7 +198,7 @@ const formatDateToYYYYMMDD = (date: Date): string => {
                 </View>
 
                 <View style={styles.row}>
-                    <View style={styles.halfInputContainer}>
+                    {/* <View style={styles.halfInputContainer}>
                         <Text style={styles.label}>Date of Birth</Text>
                         <TouchableOpacity onPress={() => setShowDatePicker(true)} style={[styles.datePicker, styles.halfInput]}>
                             <Text>{formatDateToYYYYMMDD(date) || 'Date of Birth'}</Text>
@@ -195,7 +211,7 @@ const formatDateToYYYYMMDD = (date: Date): string => {
                                 onChange={handleDateChange}
                             />
                         )}
-                    </View>
+                    </View> */}
                     <View style={styles.halfInputContainer}>
                         <Text style={styles.label}>Age</Text>
                         <TextInput
@@ -501,6 +517,32 @@ const formatDateToYYYYMMDD = (date: Date): string => {
                     </TouchableOpacity>
                 </View>
             </View>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                    <Text style={styles.modalText}>Are you sure you want to delete?</Text>
+                    <View style={styles.buttonContainer2}>
+                    <TouchableOpacity
+                        style={[styles.button, styles.buttonConfirm]}
+                        onPress={handleConfirm}
+                    >
+                        <Text style={styles.textStyle}>Confirm</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.button, styles.buttonCancel]}
+                        onPress={handleCancel}
+                    >
+                        <Text style={styles.textStyle}>Cancel</Text>
+                    </TouchableOpacity>
+                    </View>
+                </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -604,6 +646,59 @@ const styles = StyleSheet.create({
         marginTop: 20,
         width: '100%',
     },
+    container2: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22,
+      },
+      modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+      },
+      buttonContainer2: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 20,
+      },
+      button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        marginHorizontal: 10,
+      },
+      buttonConfirm: {
+        backgroundColor: '#2196F3',
+      },
+      buttonCancel: {
+        backgroundColor: '#FF6347',
+      },
+      textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+      },
+      modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+        fontSize: 18,
+      },
 });
 
 export default Profile;
