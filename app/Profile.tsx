@@ -4,6 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { format, parse } from 'date-fns'; 
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 const Profile = () => {
     const [userName, setUserName] = useState<string>('');
@@ -40,8 +41,9 @@ const Profile = () => {
     });
     const [editable, setEditable] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
-    
 
+    const navigation = useNavigation<NavigationProp<any>>();
+    
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -109,6 +111,8 @@ const formatDateToYYYYMMDD = (date: Date): string => {
                 if (response.ok) {
                     Alert.alert('Success', 'User deleted successfully');
                     // Optionally, you can navigate back or clear the data
+                    AsyncStorage.clear();
+                    navigation.navigate('Welcome');
                     setData(null);
                 } else {
                     Alert.alert('Error', 'Failed to delete user');
@@ -121,7 +125,9 @@ const formatDateToYYYYMMDD = (date: Date): string => {
         const currentDate = selectedDate || date;
         setShowDatePicker(Platform.OS === 'ios');
         setDate(currentDate);
-        setData({ ...data, dob: currentDate.toISOString().split('T')[0] });
+        console.log(currentDate);
+        console.log(formatDateToYYYYMMDD(currentDate));
+        setData({ ...data, date_of_birth: formatDateToYYYYMMDD(currentDate) });
     };
 
     if (!data) {
@@ -132,8 +138,8 @@ const formatDateToYYYYMMDD = (date: Date): string => {
         <View style={styles.wrapper}>
             <ScrollView contentContainerStyle={styles.container}>
                 <Text style={styles.header}>Shrinkhala</Text>
-                <Text style={styles.title}>Welcome to Shrinkhala!</Text>
-                <Text>Please fill up the mandatory details to continue</Text>
+                <Text style={styles.title}>Your Profile Details</Text>
+                {/* <Text>Please fill up the mandatory details to continue</Text> */}
                 <Text style={styles.sectionTitle}>Patient's Details</Text>
 
                 <Text style={styles.label}>Mobile Number</Text>
