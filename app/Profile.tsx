@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, ScrollView, Alert, TouchableOpacity,
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
+import { format, parse } from 'date-fns'; 
 
 const Profile = () => {
     const [userName, setUserName] = useState<string>('');
@@ -11,7 +12,7 @@ const Profile = () => {
         phone_number: '',
         first_name: '',
         last_name: '',
-        dob: '',
+        date_of_birth: '',
         age: '',
         gender: '',
         marital_status: '',
@@ -39,7 +40,7 @@ const Profile = () => {
     });
     const [editable, setEditable] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [date, setDate] = useState(new Date());
+    
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -85,6 +86,20 @@ const Profile = () => {
             })
             .catch((error) => console.error(error));
     };
+const dateString = "Sun, 04 Mar 2001 00:00:00 GMT";
+const val = data.date_of_birth;
+const initialDate = new Date(dateString);
+console.log(data.date_of_birth);
+
+const [date, setDate] = useState<Date>(initialDate);
+const [show, setShow] = useState<boolean>(false);
+
+const formatDateToYYYYMMDD = (date: Date): string => {
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
     const handleDelete = () => {
         fetch(`https://api.shrinkhala.in/patient/${userName}`, {
@@ -164,7 +179,7 @@ const Profile = () => {
                     <View style={styles.halfInputContainer}>
                         <Text style={styles.label}>Date of Birth</Text>
                         <TouchableOpacity onPress={() => setShowDatePicker(true)} style={[styles.datePicker, styles.halfInput]}>
-                            <Text>{data.dob || 'Date of Birth'}</Text>
+                            <Text>{formatDateToYYYYMMDD(date) || 'Date of Birth'}</Text>
                         </TouchableOpacity>
                         {showDatePicker && (
                             <DateTimePicker
