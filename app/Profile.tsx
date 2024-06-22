@@ -150,9 +150,16 @@ const formatDateToYYYYMMDD = (date: Date): string => {
     if (!data) {
         return <Text>Loading...</Text>;
     }
+    const handleLogout = async () => {
+        await AsyncStorage.clear();
+        navigation.navigate('Welcome');
+    };
 
     return (
         <View style={styles.wrapper}>
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                <Text style={styles.logoutButtonText}>Logout</Text>
+            </TouchableOpacity>
             <ScrollView contentContainerStyle={styles.container}>
                 <Text style={styles.header}>Shrinkhala</Text>
                 <Text style={styles.title}>Your Profile Details</Text>
@@ -551,6 +558,18 @@ const styles = StyleSheet.create({
     wrapper: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    logoutButton: {
+        alignSelf: 'flex-end',
+        margin: 16,
+        backgroundColor: '#FEECF0',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+    },
+    logoutButtonText: {
+        color: 'red',
+        fontWeight: 'bold',
     },
     container: {
         padding: 20,
