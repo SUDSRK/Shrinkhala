@@ -68,7 +68,9 @@ const PreviewPDF: React.FC = () => {
                 } else {
                     const responseText = await response.text();
                     console.error('Upload failed with response:', responseText);
-                    Alert.alert('Upload Error', `Upload failed: ${responseText}`);
+                    Alert.alert('Upload Error', `Upload failed, Please try after some time`, [
+                        { text: 'OK', onPress: () => router.push('/Dashboard') }
+                    ]);
                 }
             } else {
                 Alert.alert('File Error', `File at ${fileUri} does not exist.`);
@@ -76,7 +78,9 @@ const PreviewPDF: React.FC = () => {
             }
         } catch (error) {
             console.error("Error uploading file:", error);
-            Alert.alert('Upload Error', `There was an issue uploading the file: ${error.message}`);
+            Alert.alert('Upload Error', `There was an issue uploading the file, Please try after sometime.`, [
+                { text: 'OK', onPress: () => router.push('/Dashboard') }
+            ]);
         } finally {
             setLoading(false);
         }

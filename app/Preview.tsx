@@ -12,8 +12,7 @@ import {
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-
+import { useRouter } from 'expo-router';
 
 const screenWidth = Dimensions.get('window').width; // Get screen width for dynamic sizing
 
@@ -30,7 +29,7 @@ type RouteParams = {
 
 interface UploadState {
     isLoading: boolean;
-  }
+}
 
 const Preview = () => {
     const route = useRoute<RouteProp<RouteParams, 'Preview'>>();
@@ -39,7 +38,6 @@ const Preview = () => {
     const soundRef = useRef<Audio.Sound | null>(null);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
 
     // Load the sound file
     useEffect(() => {
@@ -90,18 +88,22 @@ const Preview = () => {
                 const responseText = await response.text();
                 console.error('Upload failed with response:', responseText);
                 setIsLoading(false);
-                Alert.alert('Upload Error', `Upload failed: ${responseText}`);
+                Alert.alert('Upload Error', `Upload failed: Please try after some time.`, [
+                    { text: 'OK', onPress: () => router.push('/Dashboard') }
+                ]);
             }
         } catch (error) {
             console.error("Error uploading file:", error);
             setIsLoading(false);
-            Alert.alert('Upload Error', `There was an issue uploading the file: ${error.message}`);
+            Alert.alert('Upload Error', `There was an issue uploading the file: Please try after some time.`,[
+                { text: 'OK', onPress: () => router.push('/Dashboard') }
+                ]);
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Preview Selected File</Text>
+            <Text style={styles.title}>Your Selected File</Text>
             <View style={styles.fileContainer}>
                 {file.type === 'application/pdf' ? (
                     <TouchableOpacity
@@ -114,47 +116,76 @@ const Preview = () => {
                 ) : (
                     <Image source={{ uri: file.uri }} style={styles.image} resizeMode="contain" />
                 )}
-                {isLoading && (
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <ActivityIndicator size="large" color="#0198A5" />
-                    </View>
-                )}
             </View>
             <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
                 <Text style={styles.uploadButtonText}>Upload File</Text>
             </TouchableOpacity>
+            {isLoading && (
+                <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={styles.loadingText}>Uploading...</Text>
+                </View>
+            )}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20 },
-    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
+    container: {
+        flex: 1,
+        padding: 20,
+        alignItems: 'center'
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20
+    },
     fileContainer: {
         alignItems: 'center',
-        marginBottom: 20, // Increase space between items
-        flexDirection: 'column', // Ensure items are arranged in a column
-        backgroundColor: '#f9f9f9', // Add background color for better visibility
-        padding: 10, // Add padding around each item
-        borderRadius: 10, // Add border radius for rounded corners
-        borderWidth: 1, // Add border
-        borderColor: '#ddd', // Border color
-        width: screenWidth * 0.8, // Use 80% of the screen width for the container
+        justifyContent: 'center',
+        marginBottom: 20,
+        backgroundColor: '#f9f9f9',
+        padding: 10,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        width: screenWidth * 0.9,
+        height: screenWidth * 0.9,
     },
     image: {
-        width: '100%', // Make the image take full width of the container
-        aspectRatio: 1, // Maintain the aspect ratio (square for initial setup)
-        borderRadius: 10, // Optional: Add border radius to images
+        width: '100%',
+        height: '100%',
+        borderRadius: 10,
     },
-    previewButton: { alignItems: 'center', justifyContent: 'center' },
+    previewButton: {
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
     uploadButton: {
         backgroundColor: '#0198A5',
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',
         marginTop: 20,
+        width: screenWidth * 0.9,
     },
-    uploadButtonText: { color: 'white', fontSize: 16 },
+    uploadButtonText: {
+        color: 'white',
+        fontSize: 16
+    },
+    loadingOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1
+    },
+    loadingText: {
+        color: 'white',
+        marginTop: 10,
+        fontSize: 16
+    }
 });
 
 export default Preview;

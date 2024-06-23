@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, ScrollView, Alert, TouchableOpacity,
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
-import { format, parse } from 'date-fns'; 
+import { format, parse } from 'date-fns';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 const Profile = () => {
@@ -43,46 +43,17 @@ const Profile = () => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [modalVisible, setModalVisible] = useState<boolean>(false);
 
-  const handleButtonClick = () => {
-    setModalVisible(true);
-  };
-
-  const handleConfirm = () => {
-    setModalVisible(false);
-    fetch(`https://api.shrinkhala.in/patient/${userName}`, {
-        method: 'DELETE',
-    })
-        .then((response) => {
-            if (response.ok) {
-                Alert.alert('Success', 'User deleted successfully');
-                // Optionally, you can navigate back or clear the data
-                AsyncStorage.clear();
-                navigation.navigate('Welcome');
-                setData(null);
-            } else {
-                Alert.alert('Error', 'Failed to delete user');
-            }
-        })
-        .catch((error) => console.error(error));
-    // console.log('Confirmed!');
-  };
-
-  const handleCancel = () => {
-    setModalVisible(false);
-    console.log('Cancelled!');
-  };
-
-
     const navigation = useNavigation<NavigationProp<any>>();
-    
+
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const storedUserName = await AsyncStorage.getItem('userName');
                 const storedName = await AsyncStorage.getItem('fullName');
-
+                console.log('username', storedUserName)
                 if (storedUserName) {
                     setUserName(storedUserName);
+                    console.log(userName)
                 }
                 if (storedName) {
                     setName(storedName);
@@ -119,41 +90,89 @@ const Profile = () => {
             })
             .catch((error) => console.error(error));
     };
-const dateString = "Sun, 04 Mar 2001 00:00:00 GMT";
-const val = data.date_of_birth;
-const initialDate = new Date(val);
-console.log(data.date_of_birth);
 
-const [date, setDate] = useState<Date>(initialDate);
-const [show, setShow] = useState<boolean>(false);
+    const handleButtonClick = () => {
+        setModalVisible(true);
+    };
 
-const formatDateToYYYYMMDD = (date: Date): string => {
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
+    const handleConfirm = () => {
+        setModalVisible(false);
+        fetch(`https://api.shrinkhala.in/patient/${userName}`, {
+            method: 'DELETE',
+        })
+            .then((response) => {
+                if (response.ok) {
+                    // Second API call
+                    fetch('https://api.shrinkhala.in/patient/password', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            user_id: userName,
+                            phone_number: data.phone_number,
+                        }),
+                    })
+                        .then((response) => {
+                            if (response.ok) {
+                                Alert.alert('Success', 'User and password deleted successfully');
+                                AsyncStorage.clear();
+                                navigation.navigate('Welcome');
+                                setData(null);
+                            } else {
+                                Alert.alert('Error', 'Failed to delete user password, Please try after some time');
+                            }
+                        })
+                        .catch((error) => console.error(error));
+                } else {
+                    Alert.alert('Error', 'Failed to delete user, Please try after some time');
+                }
+            })
+            .catch((error) => console.error(error));
+    };
+
+    const handleCancel = () => {
+        setModalVisible(false);
+        console.log('Cancelled!');
+    };
 
     const handleDelete = () => {
         setModalVisible(true);
     };
 
-    const handleDateChange = (event: any, selectedDate: Date | undefined) => {
-        const currentDate = selectedDate || date;
-        setShowDatePicker(Platform.OS === 'ios');
-        setDate(currentDate);
-        console.log(currentDate);
-        console.log(formatDateToYYYYMMDD(currentDate));
-        setData({ ...data, date_of_birth: formatDateToYYYYMMDD(currentDate) });
+    // const handleDateChange = (event: any, selectedDate: Date | undefined) => {
+    //     const currentDate = selectedDate || date;
+    //     setShowDatePicker(Platform.OS === 'ios');
+    //     setDate(currentDate);
+    //     console.log(currentDate);
+    //     console.log(formatDateToYYYYMMDD(currentDate));
+    //     setData({ ...data, date_of_birth: formatDateToYYYYMMDD(currentDate) });
+    // };
+    //
+    // const dateString = "Sun, 04 Mar 2001 00:00:00 GMT";
+    // const val = data.date_of_birth;
+    // const initialDate = new Date(val);
+    // console.log(data.date_of_birth);
+    //
+    // const [date, setDate] = useState<Date>(initialDate);
+    // const [show, setShow] = useState<boolean>(false);
+    //
+    // const formatDateToYYYYMMDD = (date: Date): string => {
+    //     const year = date.getUTCFullYear();
+    //     const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
+    //     const day = String(date.getUTCDate()).padStart(2, '0');
+    //     return `${year}-${month}-${day}`;
+    // };
+
+    const handleLogout = async () => {
+        await AsyncStorage.clear();
+        navigation.navigate('Welcome');
     };
 
     if (!data) {
         return <Text>Loading...</Text>;
     }
-    const handleLogout = async () => {
-        await AsyncStorage.clear();
-        navigation.navigate('Welcome');
-    };
+
 
     return (
         <View style={styles.wrapper}>
@@ -161,7 +180,6 @@ const formatDateToYYYYMMDD = (date: Date): string => {
                 <Text style={styles.logoutButtonText}>Logout</Text>
             </TouchableOpacity>
             <ScrollView contentContainerStyle={styles.container}>
-                <Text style={styles.header}>Shrinkhala</Text>
                 <Text style={styles.title}>Your Profile Details</Text>
                 {/* <Text>Please fill up the mandatory details to continue</Text> */}
                 <Text style={styles.sectionTitle}>Patient's Details</Text>

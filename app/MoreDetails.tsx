@@ -56,7 +56,7 @@ const MoreDetails: React.FC = () => {
 
   const [otherFormData, setOtherFormData] = useState<OtherFormData>({
     sameAddress: '',
-    caregiverOrOther: '',
+    caregiverOrOther: 'Same as Care giver',
     otherFirstName: '',
     otherLastName: '',
     othermobileNumber: '',

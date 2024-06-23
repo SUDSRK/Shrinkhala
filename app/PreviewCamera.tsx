@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     View,
     Text,
@@ -7,13 +7,12 @@ import {
     Image,
     Alert,
     Dimensions,
+    ActivityIndicator
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
-import * as FileSystem from 'expo-file-system';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-
+import { useRouter } from 'expo-router';
 
 const screenWidth = Dimensions.get('window').width; // Get screen width for dynamic sizing
 
@@ -34,6 +33,7 @@ const PreviewCamera = () => {
     const { file, userName } = route.params;
     const soundRef = useRef<Audio.Sound | null>(null);
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     // Load the sound file
     useEffect(() => {
@@ -54,6 +54,7 @@ const PreviewCamera = () => {
     }, []);
 
     const handleUpload = async () => {
+        setIsLoading(true);
         const formData = new FormData();
         formData.append('user_name', userName);
         formData.append('file', {
@@ -75,23 +76,30 @@ const PreviewCamera = () => {
                 if (soundRef.current) {
                     await soundRef.current.replayAsync();
                 }
+                setIsLoading(false);
                 Alert.alert('Success', 'File uploaded successfully',[
                     { text: 'OK', onPress: () => router.push('/Dashboard') }
                 ]);
             } else {
                 const responseText = await response.text();
                 console.error('Upload failed with response:', responseText);
-                Alert.alert('Upload Error', `Upload failed: ${responseText}`);
+                setIsLoading(false);
+                Alert.alert('Upload Error', `Upload failed, Please try again later`,[
+                    { text: 'OK', onPress: () => router.push('/Dashboard') }
+                ]);
             }
         } catch (error) {
             console.error("Error uploading file:", error);
-            Alert.alert('Upload Error', `There was an issue uploading the file: ${error.message}`);
+            setIsLoading(false);
+            Alert.alert('Upload Error', `There was an issue uploading the file, Please try again later`,[
+                { text: 'OK', onPress: () => router.push('/Dashboard') }
+            ]);
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Preview Captured Image</Text>
+            <Text style={styles.title}>Your Captured Image</Text>
             <View style={styles.fileContainer}>
                 <Image source={{ uri: file.uri }} style={styles.image} resizeMode="contain" />
                 <Text>Dimensions: {file.width} x {file.height}</Text>
@@ -99,13 +107,27 @@ const PreviewCamera = () => {
             <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
                 <Text style={styles.uploadButtonText}>Upload File</Text>
             </TouchableOpacity>
+            {isLoading && (
+                <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={styles.loadingText}>Uploading...</Text>
+                </View>
+            )}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20 },
-    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
+    container: {
+        flex: 1,
+        padding: 20,
+        alignItems: 'center'
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20
+    },
     fileContainer: {
         alignItems: 'center',
         marginBottom: 20, // Increase space between items
@@ -122,7 +144,10 @@ const styles = StyleSheet.create({
         aspectRatio: 1, // Maintain the aspect ratio (square for initial setup)
         borderRadius: 10, // Optional: Add border radius to images
     },
-    previewButton: { alignItems: 'center', justifyContent: 'center' },
+    previewButton: {
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
     uploadButton: {
         backgroundColor: '#0198A5',
         padding: 15,
@@ -130,7 +155,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 20,
     },
-    uploadButtonText: { color: 'white', fontSize: 16 },
+    uploadButtonText: {
+        color: 'white',
+        fontSize: 16
+    },
+    loadingOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1
+    },
+    loadingText: {
+        color: 'white',
+        marginTop: 10,
+        fontSize: 16
+    }
 });
 
 export default PreviewCamera;

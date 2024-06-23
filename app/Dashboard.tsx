@@ -10,6 +10,7 @@ import {
     SafeAreaView,
     StyleSheet,
     FlatList,
+    RefreshControl
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { CameraView, useCameraPermissions } from "expo-camera";
@@ -55,6 +56,7 @@ const Dashboard = () => {
     const [permission, requestPermission] = useCameraPermissions();
     const navigation = useNavigation();
     const cameraRef = useRef(null);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -91,6 +93,12 @@ const Dashboard = () => {
         }
     };
 
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await fetchReports();
+        setRefreshing(false);
+    };
+
     const openModal = () => {
         setShowModal(true);
     };
@@ -113,6 +121,8 @@ const Dashboard = () => {
     };
 
     const handleUploadPDFReport = async () => {
+        setShowSecondModal(false)
+
         try {
             const result = await DocumentPicker.getDocumentAsync({
                 type: "application/pdf",
@@ -136,8 +146,8 @@ const Dashboard = () => {
         }
     };
 
-
     const handleUploadImageReport = async () => {
+        setShowSecondModal(false)
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsMultipleSelection: false, // Allow only single selection
@@ -150,14 +160,15 @@ const Dashboard = () => {
                 type: selectedFile.mimeType,
                 name: selectedFile.fileName || `file_${Date.now()}`, // Assign a default name if not provided
             };
-
             closeModal();
             navigation.navigate('Preview', { file, userName });
         } else {
             Alert.alert('No file selected', 'Please select a file.');
         }
     };
+
     const handleCaptureImage = async () => {
+        setShowSecondModal(false)
         if (!permission) {
             return;
         }
@@ -214,11 +225,11 @@ const Dashboard = () => {
 
     const handleTakePicture = async () => {
         if (cameraRef.current) {
-        const photo = await cameraRef.current.takePictureAsync();
-        console.log(photo);
-        setCameraVisible(false);
-        navigation.navigate("PreviewCamera", { file: photo, userName });
-    }
+            const photo = await cameraRef.current.takePictureAsync();
+            console.log(photo);
+            setCameraVisible(false);
+            navigation.navigate("PreviewCamera", { file: photo, userName });
+        }
     };
 
     const toggleCameraType = () => {
@@ -227,12 +238,16 @@ const Dashboard = () => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ImageBackground source={whiteimg} style={styles.backgroundImage}>
+            <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
                 <FlatList
                     data={filteredReports}
                     keyExtractor={(item, index) => index.toString()}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
                     ListHeaderComponent={() => (
                         <>
+
                             <View style={styles.overlay}>
                                 <View style={styles.profileContainer}>
                                     <View style={styles.circularIcon}>
@@ -308,56 +323,53 @@ const Dashboard = () => {
                                             <Text style={styles.filterText}>Pathology</Text>
                                         </TouchableOpacity>
                                     </View>
-                                    
                                 </ImageBackground>
                             </View>
                         </>
                     )}
                     renderItem={({ item }) => (
-                        <ImageBackground source={whiteimg} style={styles.backgroundImage2}>
-                        <ImageBackground source={backgroundImage} resizeMode="cover">
-                            <View style={styles.reportItem}>
-                            <View style={styles.reportLeftContainer}>
-                                <Text style={styles.reportTitle}>
-                                    Report Name: {item.test_name}
-                                </Text>
-                                <Text style={styles.reportSubtitle}>
-                                    Test Type: {item.test_type}
-                                </Text>
-                                <TouchableOpacity
-                                    style={styles.btn}
-                                    onPress={() => handleDownload(item.unique_file_path_name)}
-                                >
-                                    <Text style={styles.btnText}>Download</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.reportRightContainer}>
-                                <Text
-                                    style={[
-                                        styles.testType,
-                                        {
-                                            backgroundColor: getTestTypeColor(item.test_type)
-                                                .bgColor,
-                                            color: getTestTypeColor(item.test_type).textColor,
-                                        },
-                                    ]}
-                                >
-                                    {item.test_type}
-                                </Text>
-                                <Text style={styles.reportDate}>
-                                    {item.extracted_date}
-                                </Text>
-                                <TouchableOpacity
-                                    style={styles.btnView}
-                                    onPress={() => handleView(item.unique_file_path_name)}
-                                >
-                                    <Text style={styles.btnViewColor}>View</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                        </ImageBackground>
-                        </ImageBackground>
-                        
+                            <ImageBackground source={backgroundImage} resizeMode="cover">
+                                <View style={styles.reportItem}>
+                                    <View style={styles.reportLeftContainer}>
+                                        <Text style={styles.reportTitle}>
+                                            Report Name: {item.test_name}
+                                        </Text>
+                                        <Text style={styles.reportSubtitle}>
+                                            Test Type: {item.test_type}
+                                        </Text>
+                                        <TouchableOpacity
+                                            style={styles.btn}
+                                            onPress={() => handleDownload(item.unique_file_path_name)}
+                                        >
+                                            <Text style={styles.btnText}>Download</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={styles.reportRightContainer}>
+                                        <Text
+                                            style={[
+                                                styles.testType,
+                                                {
+                                                    backgroundColor: getTestTypeColor(item.test_type)
+                                                        .bgColor,
+                                                    color: getTestTypeColor(item.test_type).textColor,
+                                                },
+                                            ]}
+                                        >
+                                            {item.test_type}
+                                        </Text>
+                                        <Text style={styles.reportDate}>
+                                            {item.extracted_date}
+                                        </Text>
+                                        <TouchableOpacity
+                                            style={styles.btnView}
+                                            onPress={() => handleView(item.unique_file_path_name)}
+                                        >
+                                            <Text style={styles.btnViewColor}>View</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </ImageBackground>
+
                     )}
                     contentContainerStyle={{ paddingBottom: 70 }}
                 />
@@ -479,13 +491,13 @@ const styles = StyleSheet.create({
     backgroundImage: {
         flex: 1,
         resizeMode: "contain",
-        height: 100,
+        height: 'auto',
         paddingTop: 20,
     },
     backgroundImage2: {
         flex: 1,
         resizeMode: "contain",
-        // height: 100,
+        height: 'auto',
     },
     overlay: {
         flex: 1,
