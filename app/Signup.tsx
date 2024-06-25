@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -24,8 +24,31 @@ const Signup: React.FC = () => {
 
         if (inputValue.length === 10) {
             setNumberError(false);
-            await AsyncStorage.setItem('phoneNumber', inputValue);
-            router.push({ pathname: '/OTP', params: { phoneNumber: inputValue } });
+
+            try {
+                const response = await fetch('https://api.shrinkhala,in/patient/mobile/send-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        mobile_number: inputValue,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    await AsyncStorage.setItem('phoneNumber', inputValue);
+                    router.push({ pathname: '/OTP', params: { phoneNumber: inputValue } });
+                } else {
+                    setNumberError(true);
+                    setNumberErrorMsg(data.message || 'Failed to send OTP. Please try again.');
+                }
+            } catch (error) {
+                setNumberError(true);
+                setNumberErrorMsg('Failed to send OTP. Please try again.');
+            }
         } else {
             setNumberError(true);
             setNumberErrorMsg('Please enter a 10 digit phone number.');

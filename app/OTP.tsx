@@ -33,16 +33,33 @@ const OTP = () => {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         setIsSubmitting(true);
         const otpString = otp.join('');
 
-        if (otpString === "7044") {
+        try {
+            const response = await fetch('https://api.shrinkhala.in/patient/mobile/verify-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    mobile_number: phoneNumber,
+                    otp: otpString,
+                }),
+            });
+
+            const data = await response.json();
             setIsSubmitting(false);
-            router.push({ pathname: '/Registration', params: { phoneNumber } });
-        } else {
+
+            if (response.ok) {
+                router.push({ pathname: '/Registration', params: { phoneNumber } });
+            } else {
+                setIncorrectOtp(data.message || 'Incorrect OTP');
+            }
+        } catch (error) {
             setIsSubmitting(false);
-            setIncorrectOtp("Incorrect OTP");
+            setIncorrectOtp('Failed to verify OTP. Please try again.');
         }
     };
 
