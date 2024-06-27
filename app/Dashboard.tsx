@@ -169,6 +169,8 @@ const Dashboard = () => {
 
     const handleCaptureImage = async () => {
         setShowSecondModal(false)
+        setShowModal(false)
+
         if (!permission) {
             return;
         }
