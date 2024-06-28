@@ -26,7 +26,7 @@ const Signup: React.FC = () => {
             setNumberError(false);
 
             try {
-                const response = await fetch('https://api.shrinkhala,in/patient/mobile/send-otp', {
+                const response = await fetch('https://api.shrinkhala.in/patient/mobile/send-otp', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

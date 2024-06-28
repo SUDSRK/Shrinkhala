@@ -122,7 +122,7 @@ const Dashboard = () => {
 
     const handleUploadPDFReport = async () => {
         setShowSecondModal(false)
-
+        setShowModal(false);
         try {
             const result = await DocumentPicker.getDocumentAsync({
                 type: "application/pdf",
@@ -147,6 +147,7 @@ const Dashboard = () => {
     };
 
     const handleUploadImageReport = async () => {
+        setShowModal(false);
         setShowSecondModal(false)
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -169,8 +170,6 @@ const Dashboard = () => {
 
     const handleCaptureImage = async () => {
         setShowSecondModal(false)
-        setShowModal(false)
-
         if (!permission) {
             return;
         }
@@ -230,6 +229,7 @@ const Dashboard = () => {
             const photo = await cameraRef.current.takePictureAsync();
             console.log(photo);
             setCameraVisible(false);
+            setShowModal(false);
             navigation.navigate("PreviewCamera", { file: photo, userName });
         }
     };

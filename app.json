@@ -4,7 +4,7 @@
     "slug": "Shrinkhala",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon-3.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -26,6 +26,7 @@
       "expo-router"
     ],
     "experiments": {
+      "typedRoutes": true
     },
     "extra": {
       "router": {

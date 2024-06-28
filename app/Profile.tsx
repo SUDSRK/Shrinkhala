@@ -13,7 +13,7 @@ const Profile = () => {
         phone_number: '',
         first_name: '',
         last_name: '',
-        date_of_birth: '',
+        // date_of_birth: '',
         age: '',
         gender: '',
         marital_status: '',
