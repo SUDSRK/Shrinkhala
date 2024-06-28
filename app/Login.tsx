@@ -142,7 +142,7 @@ const Login: React.FC = () => {
                 </Link>
                 <Text style={styles.signUpText}>
                     Don't have an account?{' '}
-                    <Link href="/app/Signup" asChild>
+                    <Link href="/Signup" asChild>
                         <Text style={styles.signUpLink}>Sign Up</Text>
                     </Link>
                 </Text>
