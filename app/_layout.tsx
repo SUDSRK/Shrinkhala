@@ -15,7 +15,13 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  // const username = await AsyncStorage.getItem('userName');
+  //       if (username) {
+  //           router.push('/Dashboard');
+  //       } else {
+  //           router.push('/Welcome');
+  //       }
+  initialRouteName: 'Welcome',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.

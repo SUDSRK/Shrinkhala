@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Shrinkhala",
+    "name": "Shrinkhala", 
     "slug": "Shrinkhala",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,7 +12,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptiveicon.png",
+        "foregroundImage": "./assets/images/icon-3.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.sudsrk.shrinkhala"
@@ -20,7 +20,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/icon-3.png"
     },
     "plugins": [
       "expo-router"
