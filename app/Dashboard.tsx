@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
     View,
     Text,
@@ -10,7 +10,9 @@ import {
     SafeAreaView,
     StyleSheet,
     FlatList,
-    RefreshControl
+    RefreshControl,
+    BackHandler,
+    Image
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { CameraView, useCameraPermissions } from "expo-camera";
@@ -237,6 +239,27 @@ const Dashboard = () => {
     const toggleCameraType = () => {
         setCameraType(current => (current === 'back' ? 'front' : 'back'));
     };
+
+    useEffect(() => {
+        const backAction = () => {
+            Alert.alert("Hold on!", "Are you sure you want to exit the app?", [
+                {
+                    text: "Cancel",
+                    onPress: () => null,
+                    style: "cancel"
+                },
+                { text: "YES", onPress: () => BackHandler.exitApp() }
+            ]);
+            return true;
+        };
+
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+        );
+
+        return () => backHandler.remove();
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>
