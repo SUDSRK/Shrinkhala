@@ -7,6 +7,14 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
+import FirstPasswordCreation from "@/app/FirstPasswordCreation";
+import PreviewPDF from "@/app/PreviewPDF";
+import PreviewCamera from "@/app/PreviewCamera";
+import ReportViewer from "@/app/reportViewer";
+import ShareReport from "@/app/ShareReport";
+import MoreDetails from "@/app/MoreDetails";
+import CreateNewPassword from "@/app/CreateNewPassword";
+import ForgetPassword from "@/app/forgetpassword";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -61,6 +69,15 @@ function RootLayoutNav() {
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         <Stack.Screen name="Dashboard" options={{ headerShown: false }} />
         <Stack.Screen name="Welcome" options={{ headerShown: false }} />
+        <Stack.Screen name="TermsandConditions" options={{title:'Terms And Conditions' }} />
+        <Stack.Screen name="FirstPasswordCreation" options={{title:'Create Your Password' }} />
+        <Stack.Screen name="PreviewPDF" options={{title:'Preview PDF' }} />
+        <Stack.Screen name="PreviewCamera" options={{title:'Preview' }} />
+        <Stack.Screen name="reportViewer" options={{title:'View Report' }} />
+        <Stack.Screen name="ShareReport" options={{title:'Share Report' }} />
+        <Stack.Screen name="MoreDetails" options={{title:'Kin Details' }} />
+        <Stack.Screen name="CreateNewPassword" options={{title:'Create New Password' }} />
+        <Stack.Screen name="forgetpassword" options={{title:'Forget Password' }} />
       </Stack>
     </ThemeProvider>
   );

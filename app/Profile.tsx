@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, Alert, TouchableOpacity, Platform, Modal } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, Alert, TouchableOpacity, Platform, Modal, Linking } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
@@ -549,25 +549,30 @@ const Profile = () => {
                 onRequestClose={() => setModalVisible(false)}
             >
                 <View style={styles.centeredView}>
-                <View style={styles.modalView}>
-                    <Text style={styles.modalText}>Are you sure you want to delete?</Text>
-                    <View style={styles.buttonContainer2}>
-                    <TouchableOpacity
-                        style={[styles.button, styles.buttonConfirm]}
-                        onPress={handleConfirm}
-                    >
-                        <Text style={styles.textStyle}>Confirm</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.button, styles.buttonCancel]}
-                        onPress={handleCancel}
-                    >
-                        <Text style={styles.textStyle}>Cancel</Text>
-                    </TouchableOpacity>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalText}>Are you sure you want to delete?</Text>
+                        <View style={styles.buttonContainer2}>
+                            <TouchableOpacity
+                                style={[styles.button, styles.buttonConfirm]}
+                                onPress={handleConfirm}
+                            >
+                                <Text style={styles.textStyle}>Confirm</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.button, styles.buttonCancel]}
+                                onPress={handleCancel}
+                            >
+                                <Text style={styles.textStyle}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
-                </View>
             </Modal>
+            <View style={styles.termsContainer}>
+                <TouchableOpacity onPress={() => navigation.navigate('TermsandConditions')}>
+                    <Text style={styles.termsText}>Terms and Conditions</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
@@ -687,14 +692,14 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-      },
-      centeredView: {
+    },
+    centeredView: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 22,
-      },
-      modalView: {
+    },
+    modalView: {
         margin: 20,
         backgroundColor: 'white',
         borderRadius: 20,
@@ -702,40 +707,48 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         shadowColor: '#000',
         shadowOffset: {
-          width: 0,
-          height: 2,
+            width: 0,
+            height: 2,
         },
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
-      },
-      buttonContainer2: {
+    },
+    buttonContainer2: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 20,
-      },
-      button: {
+    },
+    button: {
         borderRadius: 20,
         padding: 10,
         elevation: 2,
         marginHorizontal: 10,
-      },
-      buttonConfirm: {
+    },
+    buttonConfirm: {
         backgroundColor: '#2196F3',
-      },
-      buttonCancel: {
+    },
+    buttonCancel: {
         backgroundColor: '#FF6347',
-      },
-      textStyle: {
+    },
+    textStyle: {
         color: 'white',
         fontWeight: 'bold',
         textAlign: 'center',
-      },
-      modalText: {
+    },
+    modalText: {
         marginBottom: 15,
         textAlign: 'center',
         fontSize: 18,
-      },
+    },
+    termsContainer: {
+        padding: 10,
+        alignItems: 'center',
+    },
+    termsText: {
+        color: '#0198A5',
+        textDecorationLine: 'underline',
+    },
 });
 
 export default Profile;
