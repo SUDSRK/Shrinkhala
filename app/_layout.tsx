@@ -21,7 +21,7 @@ export const unstable_settings = {
   //       } else {
   //           router.push('/Welcome');
   //       }
-  initialRouteName: 'Welcome',
+  initialRouteName: 'Dashboard',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.

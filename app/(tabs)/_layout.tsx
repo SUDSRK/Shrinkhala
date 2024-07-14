@@ -26,22 +26,13 @@ const Logo: React.FC = () => {
     useEffect(() => {
         const timer = setTimeout(() => {
             navigate();
-        }, 1000);
+        }, 100);
 
         return () => clearTimeout(timer);
     }, [router]);
 
     return (
-        <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
-            <View style={[styles.overlay, { height: viewportHeight }]}>
-                <TouchableOpacity onPress={navigate}>
-                    <Image source={logo} style={styles.logo} />
-                </TouchableOpacity>
-                <View style={styles.footerContainer}>
-                    <Text style={styles.footerText}>A unit of : Ninety Seven Medicare Private Limited</Text>
-                </View>
-            </View>
-        </ImageBackground>
+<></>
     );
 };
 

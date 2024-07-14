@@ -151,18 +151,18 @@ const Dashboard = () => {
         setShowSecondModal(false)
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsMultipleSelection: false, // Allow only single selection
+            allowsMultipleSelection: true,
+            selectionLimit: 5, // Allow up to 5 selections
         });
 
         if (!result.canceled && result.assets && result.assets.length > 0) {
-            const selectedFile = result.assets[0];
-            const file = {
-                uri: selectedFile.uri,
-                type: selectedFile.mimeType,
-                name: selectedFile.fileName || `file_${Date.now()}`, // Assign a default name if not provided
-            };
+            const selectedFiles = result.assets.slice(0, 5).map((file) => ({
+                uri: file.uri,
+                type: file.type,
+                name: file.fileName || `file_${Date.now()}`, // Assign a default name if not provided
+            }));
             closeModal();
-            navigation.navigate('Preview', { file, userName });
+            navigation.navigate('Preview', { files: selectedFiles, userName });
         } else {
             Alert.alert('No file selected', 'Please select a file.');
         }
@@ -330,48 +330,47 @@ const Dashboard = () => {
                         </>
                     )}
                     renderItem={({ item }) => (
-                            <ImageBackground source={backgroundImage} resizeMode="cover">
-                                <View style={styles.reportItem}>
-                                    <View style={styles.reportLeftContainer}>
-                                        <Text style={styles.reportTitle}>
-                                            Report Name: {item.test_name}
-                                        </Text>
-                                        <Text style={styles.reportSubtitle}>
-                                            Test Type: {item.test_type}
-                                        </Text>
-                                        <TouchableOpacity
-                                            style={styles.btn}
-                                            onPress={() => handleDownload(item.unique_file_path_name)}
-                                        >
-                                            <Text style={styles.btnText}>Download</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                    <View style={styles.reportRightContainer}>
-                                        <Text
-                                            style={[
-                                                styles.testType,
-                                                {
-                                                    backgroundColor: getTestTypeColor(item.test_type)
-                                                        .bgColor,
-                                                    color: getTestTypeColor(item.test_type).textColor,
-                                                },
-                                            ]}
-                                        >
-                                            {item.test_type}
-                                        </Text>
-                                        <Text style={styles.reportDate}>
-                                            {item.extracted_date}
-                                        </Text>
-                                        <TouchableOpacity
-                                            style={styles.btnView}
-                                            onPress={() => handleView(item.unique_file_path_name)}
-                                        >
-                                            <Text style={styles.btnViewColor}>View</Text>
-                                        </TouchableOpacity>
-                                    </View>
+                        <ImageBackground source={backgroundImage} resizeMode="cover">
+                            <View style={styles.reportItem}>
+                                <View style={styles.reportLeftContainer}>
+                                    <Text style={styles.reportTitle}>
+                                        Report Name: {item.test_name}
+                                    </Text>
+                                    <Text style={styles.reportSubtitle}>
+                                        Test Type: {item.test_type}
+                                    </Text>
+                                    <TouchableOpacity
+                                        style={styles.btn}
+                                        onPress={() => handleDownload(item.unique_file_path_name)}
+                                    >
+                                        <Text style={styles.btnText}>Download</Text>
+                                    </TouchableOpacity>
                                 </View>
-                            </ImageBackground>
-
+                                <View style={styles.reportRightContainer}>
+                                    <Text
+                                        style={[
+                                            styles.testType,
+                                            {
+                                                backgroundColor: getTestTypeColor(item.test_type)
+                                                    .bgColor,
+                                                color: getTestTypeColor(item.test_type).textColor,
+                                            },
+                                        ]}
+                                    >
+                                        {item.test_type}
+                                    </Text>
+                                    <Text style={styles.reportDate}>
+                                        {item.extracted_date}
+                                    </Text>
+                                    <TouchableOpacity
+                                        style={styles.btnView}
+                                        onPress={() => handleView(item.unique_file_path_name)}
+                                    >
+                                        <Text style={styles.btnViewColor}>View</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </ImageBackground>
                     )}
                     contentContainerStyle={{ paddingBottom: 70 }}
                 />

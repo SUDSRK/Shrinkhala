@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Shrinkhala", 
+    "name": "Shrinkhala",
     "slug": "Shrinkhala",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -35,6 +35,11 @@
       "eas": {
         "projectId": "718ef4f0-95d4-45c9-a1bc-13afa5d7c0f2"
       }
+    },
+    "splash": {
+      "image": "./assets/images/splash.jpeg",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
     }
   }
 }

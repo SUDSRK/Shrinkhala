@@ -7,7 +7,8 @@ import {
     Image,
     Alert,
     Dimensions,
-    ActivityIndicator
+    ActivityIndicator,
+    ScrollView
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -18,11 +19,11 @@ const screenWidth = Dimensions.get('window').width; // Get screen width for dyna
 
 type RouteParams = {
     Preview: {
-        file: {
+        files: {
             uri: string;
             type: string;
             name: string;
-        };
+        }[];
         userName: string;
     };
 };
@@ -34,7 +35,7 @@ interface UploadState {
 const Preview = () => {
     const route = useRoute<RouteProp<RouteParams, 'Preview'>>();
     const navigation = useNavigation();
-    const { file, userName } = route.params;
+    const { files, userName } = route.params;
     const soundRef = useRef<Audio.Sound | null>(null);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -59,66 +60,74 @@ const Preview = () => {
 
     const handleUpload = async () => {
         setIsLoading(true);
-        const formData = new FormData();
-        formData.append('user_name', userName);
-        formData.append('file', {
-            uri: file.uri,
-            type: file.type,
-            name: file.name,
-        });
 
         try {
-            const response = await fetch("https://extract.shrinkhala.in/extract", {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            for (const file of files) {
+                const formData = new FormData();
+                formData.append('user_name', userName);
+                formData.append('file', {
+                    uri: file.uri,
+                    type: file.type,
+                    name: file.name,
+                });
 
-            if (response.ok) {
-                if (soundRef.current) {
-                    await soundRef.current.replayAsync();
+                const response = await fetch("https://extract.shrinkhala.in/extract", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+
+                if (!response.ok) {
+                    const responseText = await response.text();
+                    console.error('Upload failed with response:', responseText);
+                    setIsLoading(false);
+                    Alert.alert('Upload Error', `Upload failed: Please try after some time.`, [
+                        { text: 'OK', onPress: () => router.push('/Dashboard') }
+                    ]);
+                    return;
                 }
-                setIsLoading(false);
-                Alert.alert('Success', 'File uploaded successfully',[
-                    { text: 'OK', onPress: () => router.push('/Dashboard') }
-                ]);
-            } else {
-                const responseText = await response.text();
-                console.error('Upload failed with response:', responseText);
-                setIsLoading(false);
-                Alert.alert('Upload Error', `Upload failed: Please try after some time.`, [
-                    { text: 'OK', onPress: () => router.push('/Dashboard') }
-                ]);
             }
-        } catch (error) {
-            console.error("Error uploading file:", error);
+
+            if (soundRef.current) {
+                await soundRef.current.replayAsync();
+            }
             setIsLoading(false);
-            Alert.alert('Upload Error', `There was an issue uploading the file: Please try after some time.`,[
+            Alert.alert('Success', 'Files uploaded successfully', [
                 { text: 'OK', onPress: () => router.push('/Dashboard') }
-                ]);
+            ]);
+        } catch (error) {
+            console.error("Error uploading files:", error);
+            setIsLoading(false);
+            Alert.alert('Upload Error', `There was an issue uploading the files: Please try after some time.`, [
+                { text: 'OK', onPress: () => router.push('/Dashboard') }
+            ]);
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Your Selected File</Text>
-            <View style={styles.fileContainer}>
-                {file.type === 'application/pdf' ? (
-                    <TouchableOpacity
-                        style={styles.previewButton}
-                        onPress={() => navigation.navigate('PreviewPDF', { uri: file.uri })}
-                    >
-                        <MaterialIcons name="picture-as-pdf" size={100} color="red" />
-                        <Text>PDF File</Text>
-                    </TouchableOpacity>
-                ) : (
-                    <Image source={{ uri: file.uri }} style={styles.image} resizeMode="contain" />
-                )}
-            </View>
+            <Text style={styles.title}>Your Selected Files</Text>
+            <ScrollView contentContainerStyle={styles.filesContainer}>
+                {files.map((file, index) => (
+                    <View key={index} style={styles.fileContainer}>
+                        {file.type === 'application/pdf' ? (
+                            <TouchableOpacity
+                                style={styles.previewButton}
+                                onPress={() => navigation.navigate('PreviewPDF', { uri: file.uri })}
+                            >
+                                <MaterialIcons name="picture-as-pdf" size={100} color="red" />
+                                <Text>PDF File</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <Image source={{ uri: file.uri }} style={styles.image} resizeMode="contain" />
+                        )}
+                    </View>
+                ))}
+            </ScrollView>
             <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
-                <Text style={styles.uploadButtonText}>Upload File</Text>
+                <Text style={styles.uploadButtonText}>Upload Files</Text>
             </TouchableOpacity>
             {isLoading && (
                 <View style={styles.loadingOverlay}>
@@ -140,6 +149,10 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20
+    },
+    filesContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     fileContainer: {
         alignItems: 'center',
