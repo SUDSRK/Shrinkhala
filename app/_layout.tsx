@@ -77,7 +77,7 @@ function RootLayoutNav() {
         <Stack.Screen name="ShareReport" options={{title:'Share Report' }} />
         <Stack.Screen name="MoreDetails" options={{title:'Kin Details' }} />
         <Stack.Screen name="CreateNewPassword" options={{title:'Create New Password' }} />
-        <Stack.Screen name="forgetpassword" options={{title:'Forget Password' }} />
+        <Stack.Screen name="forgetpassword" options={{title:'Forgot Password' }} />
       </Stack>
     </ThemeProvider>
   );

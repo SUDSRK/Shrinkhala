@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         padding: 10,
         marginTop: 10,
+        color:'black'
     },
     errorText: {
         color: 'red',

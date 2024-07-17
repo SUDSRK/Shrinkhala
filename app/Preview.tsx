@@ -109,6 +109,7 @@ const Preview = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Your Selected Files</Text>
+            <Text style={styles.infoText}>Note: In case of multiple file selection, ensure that they are of the same report.</Text>
             <ScrollView contentContainerStyle={styles.filesContainer}>
                 {files.map((file, index) => (
                     <View key={index} style={styles.fileContainer}>
@@ -148,7 +149,13 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 20
+        marginBottom: 10
+    },
+    infoText: {
+        fontSize: 14,
+        color: 'red',
+        marginBottom: 20,
+        textAlign: 'center'
     },
     filesContainer: {
         alignItems: 'center',

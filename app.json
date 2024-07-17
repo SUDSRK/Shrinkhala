@@ -2,7 +2,7 @@
   "expo": {
     "name": "Shrinkhala",
     "slug": "Shrinkhala",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon-3.png",
     "scheme": "myapp",
@@ -15,7 +15,7 @@
         "foregroundImage": "./assets/images/icon-3.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.sudsrk.shrinkhala"
+      "package": "com.developers.shrinkhala"
     },
     "web": {
       "bundler": "metro",
