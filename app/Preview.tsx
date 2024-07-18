@@ -62,32 +62,32 @@ const Preview = () => {
         setIsLoading(true);
 
         try {
-            for (const file of files) {
-                const formData = new FormData();
-                formData.append('user_name', userName);
+            const formData = new FormData();
+            formData.append('user_name', userName);
+            files.forEach((file) => {
                 formData.append('file', {
                     uri: file.uri,
                     type: file.type,
                     name: file.name,
                 });
+            });
 
-                const response = await fetch("https://extract.shrinkhala.in/extract", {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
+            const response = await fetch("https://extract.shrinkhala.in/extract", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
 
-                if (!response.ok) {
-                    const responseText = await response.text();
-                    console.error('Upload failed with response:', responseText);
-                    setIsLoading(false);
-                    Alert.alert('Upload Error', `Upload failed: Please try after some time.`, [
-                        { text: 'OK', onPress: () => router.push('/Dashboard') }
-                    ]);
-                    return;
-                }
+            if (!response.ok) {
+                const responseText = await response.text();
+                console.error('Upload failed with response:', responseText);
+                setIsLoading(false);
+                Alert.alert('Upload Error', `Upload failed: Please try after some time.`, [
+                    { text: 'OK', onPress: () => router.push('/Dashboard') }
+                ]);
+                return;
             }
 
             if (soundRef.current) {
