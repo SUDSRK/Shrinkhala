@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Dimensions, Text, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { Image as ExpoImage } from 'expo-image';
 import { WebView } from 'react-native-webview';
@@ -11,6 +11,7 @@ const ReportViewer: React.FC = () => {
     const { url } = route.params;
     const fileType = url.split('.').pop()?.toLowerCase();
     const navigation = useNavigation();
+    const [loading, setLoading] = useState(true);
 
     // Log the URL and file type for debugging
     console.log('URL:', url);
@@ -33,6 +34,7 @@ const ReportViewer: React.FC = () => {
                     style={styles.webview}
                     startInLoadingState={true}
                     javaScriptEnabled={true}
+                    onLoadEnd={() => setLoading(false)}
                 />
             );
         } else {
@@ -41,8 +43,10 @@ const ReportViewer: React.FC = () => {
                     source={{ uri: url }}
                     style={styles.image}
                     contentFit="contain"
+                    onLoadEnd={() => setLoading(false)}
                     onError={(error) => {
                         console.log('Error loading image:', error);
+                        setLoading(false);
                     }}
                 />
             );
@@ -51,7 +55,12 @@ const ReportViewer: React.FC = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.content}>
+            {loading && (
+                <View style={styles.loaderContainer}>
+                    <ActivityIndicator size="large" color="#0000ff" />
+                </View>
+            )}
+            <View style={[styles.content, loading && styles.hidden]}>
                 {renderFile()}
                 {fileType !== 'pdf' && (
                     <Text style={styles.errorText}>
@@ -72,6 +81,15 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    hidden: {
+        opacity: 0,
+    },
+    loaderContainer: {
+        ...StyleSheet.absoluteFillObject,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)', // Slightly transparent background
     },
     image: {
         width: Dimensions.get('window').width,

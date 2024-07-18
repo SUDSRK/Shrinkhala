@@ -15,7 +15,8 @@
         "foregroundImage": "./assets/images/icon-3.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.developers.shrinkhala"
+      "package": "com.sudsrk.shrinkhala",
+      "versionCode": 2
     },
     "web": {
       "bundler": "metro",

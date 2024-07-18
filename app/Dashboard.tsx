@@ -154,14 +154,14 @@ const Dashboard = () => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsMultipleSelection: true,
-            selectionLimit: 5, // Allow up to 5 selections
+            selectionLimit: 5,
         });
 
         if (!result.canceled && result.assets && result.assets.length > 0) {
             const selectedFiles = result.assets.slice(0, 5).map((file) => ({
                 uri: file.uri,
-                type: file.type,
-                name: file.fileName || `file_${Date.now()}`, // Assign a default name if not provided
+                type: file.mimeType,
+                name: file.fileName || `file_${Date.now()}`
             }));
             closeModal();
             navigation.navigate('Preview', { files: selectedFiles, userName });
