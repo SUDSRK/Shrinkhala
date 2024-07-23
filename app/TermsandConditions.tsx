@@ -22,23 +22,23 @@ const TermsAndConditions = () => {
                     <Text style={styles.paragraph}>
                         The Agreement applies to you whether you are -
                     </Text>
-                    <Text style={styles.paragraph}>
-                        A medical practitioner or health care provider (whether an individual professional or an organization) or similar institution wishing to be listed or already listed on the Website including designated authorized associates of such practitioners or institutions (“Practitioner(s)” “you” or “User”); or
+                    <Text style={styles.bulletPoint}>
+                        • A medical practitioner or health care provider (whether an individual professional or an organization) or similar institution wishing to be listed or already listed on the Website including designated authorized associates of such practitioners or institutions (“Practitioner(s)” “you” or “User”); or
                     </Text>
-                    <Text style={styles.paragraph}>
-                        A patient his/her representatives or affiliates searching for Practitioners through the Website (“End-User” “you” or “User”); or
+                    <Text style={styles.bulletPoint}>
+                        • A patient his/her representatives or affiliates searching for Practitioners through the Website (“End-User” “you” or “User”); or
                     </Text>
-                    <Text style={styles.paragraph}>
-                        Otherwise a user of the Website (“you” or “User”).
+                    <Text style={styles.bulletPoint}>
+                        • Otherwise a user of the Website (“you” or “User”).
                     </Text>
                     <Text style={styles.paragraph}>
                         This Agreement applies to those services made available by Shrinkhala on the Website (“Services”) including but not limited to the following:
                     </Text>
-                    <Text style={styles.paragraph}>
-                        For Practitioners: Listing of Practitioners and their profiles and contact details to be made available to the other Users and visitors to the Website;
+                    <Text style={styles.bulletPoint}>
+                        • For Practitioners: Listing of Practitioners and their profiles and contact details to be made available to the other Users and visitors to the Website;
                     </Text>
-                    <Text style={styles.paragraph}>
-                        For other Users: Facility to (i) create and maintain ‘Health Accounts’ (ii) search for Practitioners by name specialty and geographical area or any other criteria that may be developed and made available by Shrinkhala and (iii) to make appointments with Practitioners.
+                    <Text style={styles.bulletPoint}>
+                        • For other Users: Facility to (i) create and maintain ‘Health Accounts’ (ii) search for Practitioners by name specialty and geographical area or any other criteria that may be developed and made available by Shrinkhala and (iii) to make appointments with Practitioners.
                     </Text>
                     <Text style={styles.paragraph}>
                         The Services may change from time to time at the sole discretion of Shrinkhala and the Agreement will apply to your visit to and your use of the Website to avail the Service as well as to all information provided by you on the Website at any given point in time.
@@ -61,14 +61,14 @@ const TermsAndConditions = () => {
                     <Text style={styles.paragraph}>
                         The Agreement is published in compliance of and is governed by the provisions of Indian law including but not limited to:
                     </Text>
-                    <Text style={styles.paragraph}>
-                        the Indian Contract Act 1872
+                    <Text style={styles.bulletPoint}>
+                        • the Indian Contract Act 1872
                     </Text>
-                    <Text style={styles.paragraph}>
-                        the (Indian) Information Technology Act 2000 and
+                    <Text style={styles.bulletPoint}>
+                        • the (Indian) Information Technology Act 2000 and
                     </Text>
-                    <Text style={styles.paragraph}>
-                        the rules regulations guidelines and clarifications framed there under including the (Indian) Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Information) Rules 2011 (the “SPI Rules”) and Information Technology (Intermediary Guidelines and Digital Ethics Code) Rules 2021 (the “IG Rules”).
+                    <Text style={styles.bulletPoint}>
+                        • the rules regulations guidelines and clarifications framed there under including the (Indian) Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Information) Rules 2011 (the “SPI Rules”) and Information Technology (Intermediary Guidelines and Digital Ethics Code) Rules 2021 (the “IG Rules”).
                     </Text>
                 </View>
                 <View style={styles.section}>
@@ -95,38 +95,38 @@ const TermsAndConditions = () => {
                     <Text style={styles.paragraph}>
                         3.1.4 The Privacy Policy sets out inter-alia:
                     </Text>
-                    <Text style={styles.paragraph}>
-                        The type of information collected from Users including sensitive personal data or information;
+                    <Text style={styles.bulletPoint}>
+                        • The type of information collected from Users including sensitive personal data or information;
                     </Text>
-                    <Text style={styles.paragraph}>
-                        The purpose means and modes of usage of such information;
+                    <Text style={styles.bulletPoint}>
+                        • The purpose means and modes of usage of such information;
                     </Text>
-                    <Text style={styles.paragraph}>
-                        How and to whom Shrinkhala will disclose such information; and
+                    <Text style={styles.bulletPoint}>
+                        • How and to whom Shrinkhala will disclose such information; and
                     </Text>
-                    <Text style={styles.paragraph}>
-                        Other information mandated by the SPI Rules.
+                    <Text style={styles.bulletPoint}>
+                        • Other information mandated by the SPI Rules.
                     </Text>
                     <Text style={styles.paragraph}>
                         3.1.5 The User is expected to read and understand the Privacy Policy so as to ensure that he or she has the knowledge of inter-alia:
                     </Text>
-                    <Text style={styles.paragraph}>
-                        the fact that certain information is being collected;
+                    <Text style={styles.bulletPoint}>
+                        • the fact that certain information is being collected;
                     </Text>
-                    <Text style={styles.paragraph}>
-                        the purpose for which the information is being collected;
+                    <Text style={styles.bulletPoint}>
+                        • the purpose for which the information is being collected;
                     </Text>
-                    <Text style={styles.paragraph}>
-                        the intended recipients of the information;
+                    <Text style={styles.bulletPoint}>
+                        • the intended recipients of the information;
                     </Text>
-                    <Text style={styles.paragraph}>
-                        the nature of collection and retention of the information; and
+                    <Text style={styles.bulletPoint}>
+                        • the nature of collection and retention of the information; and
                     </Text>
-                    <Text style={styles.paragraph}>
-                        the name and address of the agency that is collecting the information and the agency that will retain the information; and
+                    <Text style={styles.bulletPoint}>
+                        • the name and address of the agency that is collecting the information and the agency that will retain the information; and
                     </Text>
-                    <Text style={styles.paragraph}>
-                        the various rights available to such Users in respect of such information.
+                    <Text style={styles.bulletPoint}>
+                        • the various rights available to such Users in respect of such information.
                     </Text>
                     <Text style={styles.paragraph}>
                         3.1.6 Shrinkhala shall not be responsible in any manner for the authenticity of the personal information or sensitive personal data or information supplied by the User to Shrinkhala or to any other person acting on behalf of Shrinkhala.
@@ -154,26 +154,34 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
     },
     section: {
-        marginBottom: 20
+        marginBottom: 20,
     },
     header: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 10
+        marginBottom: 10,
+        textAlign: 'center',
     },
     subHeader: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 5
+        marginBottom: 5,
     },
     paragraph: {
         fontSize: 14,
-        lineHeight: 20,
-        marginBottom: 10
-    }
+        lineHeight: 22,
+        marginBottom: 10,
+        textAlign: 'justify',
+    },
+    bulletPoint: {
+        fontSize: 14,
+        lineHeight: 22,
+        marginBottom: 10,
+        marginLeft: 15,
+    },
 });
 
 export default TermsAndConditions;
