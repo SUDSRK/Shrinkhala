@@ -419,8 +419,13 @@ const Dashboard = () => {
                                 onPress={handleCaptureImage}
                             >
                                 <Text style={styles.uploadButtonText}>Scan report</Text>
+
                             </TouchableOpacity>
+                            <Text style={styles.modalNote}>
+                                *Upload your reports in portrait mode only.
+                            </Text>
                         </View>
+
                     </View>
                 </Modal>
 
@@ -590,6 +595,12 @@ const styles = StyleSheet.create({
     },
     activeTabText: {
         color: "#0198A5",
+    },
+    modalNote: {
+        marginTop: 10,
+        fontSize: 14,
+        fontStyle: "italic",
+        color: "red",
     },
     btn: {
         backgroundColor: "#e6f6f6",

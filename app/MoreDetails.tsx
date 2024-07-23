@@ -76,7 +76,7 @@ const MoreDetails: React.FC = () => {
   const handleCheckboxChange = (newValue: boolean) => {
     setIsChecked(newValue);
     console.log(newValue+"---");
-    
+
     if(newValue) {
       setHideInputs(true);
       handleChangeLocal('sameAddress','true');
@@ -98,12 +98,12 @@ const MoreDetails: React.FC = () => {
 
   const disableCheck = () => {
     setIsDisabled(
-      !isChecked || otherFormData.caregiverOrOther === 'Same as Care giver' ||
-      otherFormData.kinHouse.trim() === '' ||
-      otherFormData.kinLocality.trim() === '' ||
-      otherFormData.kinCity.trim() === '' ||
-      otherFormData.kinState.trim() === '' ||
-      otherFormData.kinPincode.trim() === ''
+        !isChecked || otherFormData.caregiverOrOther === 'Same as Care giver' ||
+        otherFormData.kinHouse.trim() === '' ||
+        otherFormData.kinLocality.trim() === '' ||
+        otherFormData.kinCity.trim() === '' ||
+        otherFormData.kinState.trim() === '' ||
+        otherFormData.kinPincode.trim() === ''
     );
   };
 
@@ -152,177 +152,172 @@ const MoreDetails: React.FC = () => {
       }),
       referrerPolicy: 'strict-origin-when-cross-origin'
     })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        AsyncStorage.setItem('userName', data.userName);
-        navigation.navigate('FirstPasswordCreation');
-      })
-      .catch(error => {
-        console.error('There was a problem with the login request:', error);
-      });
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          AsyncStorage.setItem('userName', data.userName);
+          navigation.navigate('FirstPasswordCreation');
+        })
+        .catch(error => {
+          console.error('There was a problem with the login request:', error);
+        });
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Shrinkhala</Text>
-      </View>
-      <Text style={styles.subtitle}>Please share more details</Text>
-      <Text style={styles.sectionTitle}>Patient's Next of Kin</Text>
-      <View style={styles.radioGroup}>
-        <View style={styles.radioButton}>
-          <RadioButton
-            value="Same as Care giver"
-            status={otherFormData.caregiverOrOther === 'Same as Care giver' ? 'checked' : 'unchecked'}
-            onPress={() => handleChangeLocal('caregiverOrOther', 'Same as Care giver')}
-            color="#0198A5"
-          />
-          <Text>Same as Care giver</Text>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Shrinkhala</Text>
         </View>
-        <View style={styles.radioButton}>
-          <RadioButton
-            value="Other"
-            status={otherFormData.caregiverOrOther === 'Other' ? 'checked' : 'unchecked'}
-            onPress={() => handleChangeLocal('caregiverOrOther', 'Other')}
-            color="#0198A5"
-          />
-          <Text>Other</Text>
-        </View>
-      </View>
-
-      {otherFormData.caregiverOrOther === 'Other' && (
-        <View>
-          <Text style={styles.sectionTitle}>Kin's Details</Text>
-          <View style={styles.inputGroup}>
-            <TextInput
-              style={[styles.input, styles.halfWidth]}
-              placeholder="   First Name"
-              value={otherFormData.otherFirstName}
-              onChangeText={(value) => handleChangeLocal('otherFirstName', value)}
+        <Text style={styles.subtitle}>Please share more details</Text>
+        <Text style={styles.sectionTitle}>Patient's Next of Kin</Text>
+        <View style={styles.radioGroup}>
+          <View style={styles.radioButton}>
+            <RadioButton
+                value="Same as Care giver"
+                status={otherFormData.caregiverOrOther === 'Same as Care giver' ? 'checked' : 'unchecked'}
+                onPress={() => handleChangeLocal('caregiverOrOther', 'Same as Care giver')}
+                color="#0198A5"
             />
-            <TextInput
-              style={[styles.input, styles.halfWidth]}
-              placeholder="   Last Name"
-              value={otherFormData.otherLastName}
-              onChangeText={(value) => handleChangeLocal('otherLastName', value)}
-            />
+            <Text>Same as Care giver</Text>
           </View>
-          <TextInput
-            style={styles.input}
-            placeholder="   Mobile Number"
-            keyboardType="numeric"
-            maxLength={10}
-            value={otherFormData.othermobileNumber}
-            onChangeText={(value) => handleChangeLocal('othermobileNumber', value)}
-          />
-          <View style={styles.picker}>
-            <Picker
-              selectedValue={otherFormData.otherRelation}
-              onValueChange={(itemValue) => handleChangeLocal('otherRelation', itemValue)}
-            >
-              <Picker.Item style={{ color: 'grey' }} label="Relationship with Kin" value="" />
-              <Picker.Item label="Spouse" value="spouse" />
-              <Picker.Item label="Son" value="son" />
-              <Picker.Item label="Daughter" value="daughter" />
-              <Picker.Item label="Cousin" value="cousin" />
-              <Picker.Item label="Brother-in-law" value="brotherInLaw" />
-              <Picker.Item label="Sister-in-law" value="sisterInLaw" />
-              <Picker.Item label="Father" value="father" />
-              <Picker.Item label="Mother" value="mother" />
-              <Picker.Item label="Brother" value="brother" />
-              <Picker.Item label="Sister" value="sister" />
-              <Picker.Item label="Friend" value="friend" />
-              <Picker.Item label="Other" value="other" />
-            </Picker>
+          <View style={styles.radioButton}>
+            <RadioButton
+                value="Other"
+                status={otherFormData.caregiverOrOther === 'Other' ? 'checked' : 'unchecked'}
+                onPress={() => handleChangeLocal('caregiverOrOther', 'Other')}
+                color="#0198A5"
+            />
+            <Text>Other</Text>
           </View>
         </View>
-      )}
 
-      <Text style={styles.sectionTitle}>Kin's Address</Text>
-      <View style={styles.checkboxContainer}>
-        {/* <CheckBox
-          value={isChecked}
-          onValueChange={handleCheckboxChange}
-        /> */}
-        {/*<BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {handleCheckboxChange(isChecked)}} />*/}
-        <Text style={styles.checkboxLabel}>Same as Patient</Text>
-        <BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {handleCheckboxChange(isChecked)}} />
+        {otherFormData.caregiverOrOther === 'Other' && (
+            <View>
+              <Text style={styles.sectionTitle}>Kin's Details</Text>
+              <View style={styles.inputGroup}>
+                <TextInput
+                    style={[styles.input, styles.halfWidth]}
+                    placeholder="   First Name"
+                    value={otherFormData.otherFirstName}
+                    onChangeText={(value) => handleChangeLocal('otherFirstName', value)}
+                />
+                <TextInput
+                    style={[styles.input, styles.halfWidth]}
+                    placeholder="   Last Name"
+                    value={otherFormData.otherLastName}
+                    onChangeText={(value) => handleChangeLocal('otherLastName', value)}
+                />
+              </View>
+              <TextInput
+                  style={styles.input}
+                  placeholder="   Mobile Number"
+                  keyboardType="numeric"
+                  maxLength={10}
+                  value={otherFormData.othermobileNumber}
+                  onChangeText={(value) => handleChangeLocal('othermobileNumber', value)}
+              />
+              <View style={styles.picker}>
+                <Picker
+                    selectedValue={otherFormData.otherRelation}
+                    onValueChange={(itemValue) => handleChangeLocal('otherRelation', itemValue)}
+                >
+                  <Picker.Item style={{ color: 'grey' }} label="Relationship with Kin" value="" />
+                  <Picker.Item label="Spouse" value="spouse" />
+                  <Picker.Item label="Son" value="son" />
+                  <Picker.Item label="Daughter" value="daughter" />
+                  <Picker.Item label="Cousin" value="cousin" />
+                  <Picker.Item label="Brother-in-law" value="brotherInLaw" />
+                  <Picker.Item label="Sister-in-law" value="sisterInLaw" />
+                  <Picker.Item label="Father" value="father" />
+                  <Picker.Item label="Mother" value="mother" />
+                  <Picker.Item label="Brother" value="brother" />
+                  <Picker.Item label="Sister" value="sister" />
+                  <Picker.Item label="Friend" value="friend" />
+                  <Picker.Item label="Other" value="other" />
+                </Picker>
+              </View>
+            </View>
+        )}
 
-      </View>
-      {!hideInputs&&(
-        <>
-        <View>
-          <TextInput
-            style={[styles.input]}
-            placeholder="   House/Flat Number"
-            value={otherFormData.kinHouse}
-            onChangeText={(value) => handleChangeLocal('kinHouse', value)}
-          />
-          <TextInput
-            style={[styles.input]}
-            placeholder="   Locality"
-            value={otherFormData.kinLocality}
-            onChangeText={(value) => handleChangeLocal('kinLocality', value)}
-          />
+        <Text style={styles.sectionTitle}>Kin's Address</Text>
+        <View style={styles.checkboxContainer}>
+          <Text style={styles.checkboxLabel}>Same as Patient</Text>
+          <BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {handleCheckboxChange(isChecked)}} />
         </View>
-        <View style={styles.inputGroup}>
-          <TextInput
-            style={[styles.input, styles.halfWidth]}
-            placeholder="   City"
-            value={otherFormData.kinCity}
-            onChangeText={(value) => handleChangeLocal('kinCity', value)}
-          />
-          <TextInput
-            style={[styles.input, styles.halfWidth]}
-            placeholder="   District"
-            value={otherFormData.kinDistrict}
-            onChangeText={(value) => handleChangeLocal('kinDistrict', value)}
-          />
-        </View>
-        <View style={styles.inputGroup}>
-          <TextInput
-            style={[styles.input, styles.halfWidth]}
-            placeholder="   State"
-            value={otherFormData.kinState}
-            onChangeText={(value) => handleChangeLocal('kinState', value)}
-          />
-          <TextInput
-            style={[styles.input, styles.halfWidth]}
-            placeholder="   Pincode"
-            value={otherFormData.kinPincode}
-            keyboardType="numeric"
-            maxLength={6}
-            onChangeText={(value) => handleChangeLocal('kinPincode', value)}
-          />
-        </View>
-      </>
-)}
-      <View style={styles.checkboxContainer}>
-        {/* <CheckBox
-          value={isChecked}
-          onValueChange={handleCheckboxChange}
-        /> */}
-        <Text style={styles.checkboxLabel}>I agree to the Terms and Conditions</Text>
-        <BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {}} />
-      </View>
 
-      <TouchableOpacity
-        style={[styles.submitButton, isDisabled && styles.disabledButton]}
-        onPress={registerFormSubmit}
-        disabled={isDisabled}
-      >
-        <Text style={styles.submitButtonText}>Submit</Text>
-      </TouchableOpacity>
+        {!hideInputs&&(
+            <>
+              <View>
+                <TextInput
+                    style={[styles.input]}
+                    placeholder="   House/Flat Number"
+                    value={otherFormData.kinHouse}
+                    onChangeText={(value) => handleChangeLocal('kinHouse', value)}
+                />
+                <TextInput
+                    style={[styles.input]}
+                    placeholder="   Locality"
+                    value={otherFormData.kinLocality}
+                    onChangeText={(value) => handleChangeLocal('kinLocality', value)}
+                />
+              </View>
+              <View style={styles.inputGroup}>
+                <TextInput
+                    style={[styles.input, styles.halfWidth]}
+                    placeholder="   City"
+                    value={otherFormData.kinCity}
+                    onChangeText={(value) => handleChangeLocal('kinCity', value)}
+                />
+                <TextInput
+                    style={[styles.input, styles.halfWidth]}
+                    placeholder="   District"
+                    value={otherFormData.kinDistrict}
+                    onChangeText={(value) => handleChangeLocal('kinDistrict', value)}
+                />
+              </View>
+              <View style={styles.inputGroup}>
+                <TextInput
+                    style={[styles.input, styles.halfWidth]}
+                    placeholder="   State"
+                    value={otherFormData.kinState}
+                    onChangeText={(value) => handleChangeLocal('kinState', value)}
+                />
+                <TextInput
+                    style={[styles.input, styles.halfWidth]}
+                    placeholder="   Pincode"
+                    value={otherFormData.kinPincode}
+                    keyboardType="numeric"
+                    maxLength={6}
+                    onChangeText={(value) => handleChangeLocal('kinPincode', value)}
+                />
+              </View>
+            </>
+        )}
 
-      {/*<TouchableOpacity onPress={backButtonHandler}>*/}
-      {/*  <Text style={styles.laterText}>Do it later</Text>*/}
-      {/*</TouchableOpacity>*/}
-    </ScrollView>
+        <View style={styles.checkboxContainer}>
+          <BouncyCheckbox fillColor="#0198A5" onPress={(isChecked: boolean) => {}} />
+          <Text style={styles.checkboxLabel}>I agree to the </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('TermsandConditions')}>
+            <Text style={styles.termsText}>Terms and Conditions</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+            style={[styles.submitButton, isDisabled && styles.disabledButton]}
+            onPress={registerFormSubmit}
+            disabled={isDisabled}
+        >
+          <Text style={styles.submitButtonText}>Submit</Text>
+        </TouchableOpacity>
+
+        {/*<TouchableOpacity onPress={backButtonHandler}>*/}
+        {/*  <Text style={styles.laterText}>Do it later</Text>*/}
+        {/*</TouchableOpacity>*/}
+      </ScrollView>
   );
 };
 
@@ -399,6 +394,13 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 4,
     color: '#0198A5',
+  },
+  termsText: {
+    fontSize: 16,
+    paddingVertical: 4,
+    paddingHorizontal: 4,
+    color: '#0198A5',
+    textDecorationLine: 'underline',
   },
   submitButton: {
     backgroundColor: '#0198A5',
