@@ -15,6 +15,12 @@
         "foregroundImage": "./assets/images/icon-3.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET",
+        "ACCESS_MEDIA_LOCATION"
+      ],
       "package": "com.sudsrk.shrinkhala",
       "versionCode": 3
     },

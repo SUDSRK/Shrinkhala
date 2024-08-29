@@ -8,12 +8,13 @@ import {
     Alert,
     Dimensions,
     ActivityIndicator,
-    ScrollView
+    ScrollView,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import { useRouter } from 'expo-router';
+import * as FileSystem from 'expo-file-system';
 
 const screenWidth = Dimensions.get('window').width; // Get screen width for dynamic sizing
 
@@ -27,10 +28,6 @@ type RouteParams = {
         userName: string;
     };
 };
-
-interface UploadState {
-    isLoading: boolean;
-}
 
 const Preview = () => {
     const route = useRoute<RouteProp<RouteParams, 'Preview'>>();
@@ -58,21 +55,35 @@ const Preview = () => {
         };
     }, []);
 
+    const validateFileUri = async (uri: string) => {
+        const fileInfo = await FileSystem.getInfoAsync(uri);
+        return fileInfo.exists && fileInfo.isFile;
+    };
+
     const handleUpload = async () => {
         setIsLoading(true);
 
         try {
             const formData = new FormData();
             formData.append('user_name', userName);
-            files.forEach((file) => {
+
+            // Validate and append each file
+            for (const file of files) {
+                const isValidUri = await validateFileUri(file.uri);
+                if (!isValidUri) {
+                    Alert.alert('File Error', `File at ${file.uri} does not exist or is not accessible.`);
+                    setIsLoading(false);
+                    return;
+                }
+
                 formData.append('file', {
                     uri: file.uri,
-                    type: file.type,
-                    name: file.name,
+                    type: file.type || 'image/jpeg', // Default to 'image/jpeg' if type is missing
+                    name: file.name || 'upload.jpg', // Ensure a name is provided
                 });
-            });
+            }
 
-            const response = await fetch("https://extract.shrinkhala.in/extract", {
+            const response = await fetch('https://extract.shrinkhala.in/extract', {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -83,26 +94,28 @@ const Preview = () => {
             if (!response.ok) {
                 const responseText = await response.text();
                 console.error('Upload failed with response:', responseText);
-                setIsLoading(false);
-                Alert.alert('Upload Error', `Upload failed: Please try after some time.`, [
-                    { text: 'OK', onPress: () => router.push('/Dashboard') }
+                Alert.alert('Upload Error', `Upload failed: ${responseText || 'Please try again later.'}`, [
+                    { text: 'OK', onPress: () => router.push('/Dashboard') },
                 ]);
+                setIsLoading(false);
                 return;
             }
 
+            // Play success sound
             if (soundRef.current) {
                 await soundRef.current.replayAsync();
             }
-            setIsLoading(false);
+
             Alert.alert('Success', 'Files uploaded successfully', [
-                { text: 'OK', onPress: () => router.push('/Dashboard') }
+                { text: 'OK', onPress: () => router.push('/Dashboard') },
             ]);
         } catch (error) {
-            console.error("Error uploading files:", error);
-            setIsLoading(false);
-            Alert.alert('Upload Error', `There was an issue uploading the files: Please try after some time.`, [
-                { text: 'OK', onPress: () => router.push('/Dashboard') }
+            console.error('Error uploading files:', error);
+            Alert.alert('Upload Error', `There was an issue uploading the files. Please try again later.`, [
+                { text: 'OK', onPress: () => router.push('/Dashboard') },
             ]);
+        } finally {
+            setIsLoading(false);
         }
     };
 
