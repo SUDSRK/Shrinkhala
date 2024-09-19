@@ -67,7 +67,6 @@ const Preview = () => {
             const formData = new FormData();
             formData.append('user_name', userName);
 
-            // Validate and append each file
             for (const file of files) {
                 const isValidUri = await validateFileUri(file.uri);
                 if (!isValidUri) {
@@ -78,8 +77,8 @@ const Preview = () => {
 
                 formData.append('file', {
                     uri: file.uri,
-                    type: file.type || 'image/jpeg', // Default to 'image/jpeg' if type is missing
-                    name: file.name || 'upload.jpg', // Ensure a name is provided
+                    type: file.type || 'image/jpeg',
+                    name: file.name || 'upload.jpg',
                 });
             }
 
