@@ -150,7 +150,10 @@ const Dashboard = () => {
 
     const handleUploadImageReport = async () => {
         setShowModal(false);
-        setShowSecondModal(false)
+        setShowSecondModal(false);
+        const permissionGranted = await getPermission();
+        if (!permissionGranted) return;
+
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsMultipleSelection: true,

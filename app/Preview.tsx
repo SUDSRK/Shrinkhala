@@ -57,7 +57,7 @@ const Preview = () => {
 
     const validateFileUri = async (uri: string) => {
         const fileInfo = await FileSystem.getInfoAsync(uri);
-        return fileInfo.exists && fileInfo.isFile;
+        return fileInfo.exists && fileInfo;
     };
 
     const handleUpload = async () => {

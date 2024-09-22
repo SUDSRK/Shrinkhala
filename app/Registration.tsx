@@ -9,6 +9,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
+import {Alert} from "react-native";
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -113,12 +114,38 @@ const Registration: React.FC<RegistrationFormProps> = () => {
     return age.toString();
   };
 
-  const registerFormSubmit = async () => {
-    // setPatientDetails(formData);
-    await AsyncStorage.setItem('patientData', JSON.stringify(formData));
+    const registerFormSubmit = async () => {
+      const requiredFields: { field: keyof FormData; label: string }[] = [
+        { field: 'firstName', label: "First Name" },
+        { field: 'lastName', label: "Last Name" },
+        { field: 'mobileNumber', label: "Mobile Number" },
+        { field: 'patientOrCaregiver', label: "Patient or Caregiver Selection" },
+        { field: 'dob', label: "Date of Birth" },
+        { field: 'age', label: "Age" },
+        { field: 'gender', label: "Gender" },
+        { field: 'maritalStatus', label: "Marital Status" },
+        { field: 'alternateNumber', label: "Alternate Mobile Number" },
+        { field: 'house', label: "House No, Road or Street" },
+        { field: 'locality', label: "Locality" },
+        { field: 'city', label: "City" },
+        { field: 'district', label: "District" },
+        { field: 'state', label: "State" },
+        { field: 'pincode', label: "Pincode" },
+        { field: 'careFirstName', label: "Caregiver First Name" },
+        { field: 'careLastName', label: "Caregiver Last Name" },
+        { field: 'careMobNo', label: "Caregiver Mobile Number" },
+        { field: 'careRelation', label: "Caregiver Relationship" }
+      ];
+
+      for (const field of requiredFields) {
+        if (!formData[field.field]) {
+          Alert.alert("Validation Error", `The ${field.label} field is mandatory.`);
+          return;
+        }
+      }
+      await AsyncStorage.setItem('patientData', JSON.stringify(formData));
     await AsyncStorage.setItem('phoneNumber', formData.mobileNumber);
     navigation.navigate('MoreDetails', { formData });
-    // router.push({ pathname: '/moredetails', params: { formData: JSON.stringify(formData) }, });
   };
 
   const showDatepicker = () => {
@@ -140,7 +167,6 @@ const Registration: React.FC<RegistrationFormProps> = () => {
   return (
     <View style={styles.wrapper}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.header}>Shrinkhala</Text>
         <Text style={styles.title}>Welcome to Shrinkhala!</Text>
         <Text>Please fill up the mandatory details to continue</Text>
         <Text style={styles.sectionTitle}>Patient's Details</Text>
@@ -361,98 +387,130 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   container: {
-    padding: width * 0.05,
-    paddingBottom: height * 0.1, // Add more padding at the bottom
+    paddingHorizontal: '5%', // Using percentage for responsiveness
+    paddingBottom: '20%', // Adjust for bottom space especially on smaller screens
   },
   header: {
-    fontSize: width * 0.06,
+    fontSize: width > 600 ? 28 : 22, // Larger font for tablets
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#0198A5',
-    marginVertical: width * 0.05,
+    marginVertical: '5%',
   },
   title: {
-    fontSize: width * 0.045,
+    fontSize: width > 600 ? 20 : 16, // Adjust title size based on screen width
     fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: '4%',
   },
   sectionTitle: {
-    marginTop: width * 0.05,
-    fontSize: width * 0.04,
+    marginTop: '5%',
+    fontSize: width > 600 ? 20 : 16, // Responsive text size
     fontWeight: 'bold',
+    color: '#333',
+    marginBottom: '2%',
   },
   input: {
     borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: 25, // Adjusted to be more rounded
-    padding: width * 0.03, // Adjusted for better touch target
-    marginVertical: width * 0.025,
-    flex: 1, // Ensure inputs take up available space to prevent overflow
-  },
-  halfInput: {
-    flex: 1,
+    borderColor: '#ccc',
+    borderRadius: 25,
+    paddingVertical: width > 600 ? 15 : 10, // Adjust padding based on screen width
+    paddingHorizontal: '5%',
+    marginVertical: '2.5%',
+    fontSize: width > 600 ? 18 : 14, // Adjust font size for inputs
+    backgroundColor: '#f9f9f9',
+    width: '100%',
   },
   radioContainer: {
     flexDirection: 'row',
-    marginVertical: width * 0.025,
+    marginVertical: '2.5%',
+    justifyContent: 'space-around',
   },
   radioOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: width * 0.025,
   },
   radioText: {
-    marginLeft: width * 0.01,
+    marginLeft: 5,
+    fontSize: width > 600 ? 16 : 14, // Adjust radio text size
   },
   datePicker: {
     borderWidth: 1,
-    borderColor: 'black',
-    color: 'grey',
-    borderRadius: 25, // Adjusted to be more rounded
-    padding: width * 0.03, // Adjusted for better touch target
-    paddingHorizontal: 12,
-    marginVertical: width * 0.025,
+    borderColor: '#ccc',
+    borderRadius: 25,
+    paddingVertical: width > 600 ? 15 : 10,
+    paddingHorizontal: '5%',
+    marginVertical: '2.5%',
     justifyContent: 'center',
-    // alignItems: 'center',
+    backgroundColor: '#f9f9f9',
+    flex: 1,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: width * 0.025,
+    marginVertical: '2.5%',
+    width: '100%', // Ensure full width of the row
+  },
+  halfInput: {
+    flex: 1,
   },
   marginRight: {
-    marginRight: width * 0.0125,
+    marginRight: '2.5%',
   },
   marginLeft: {
-    marginLeft: width * 0.0125,
+    marginLeft: '2.5%',
   },
   picker: {
-    // marginRight: 0,
-    // paddingRight: 40,
-    height: width * 0.1,
-    marginTop: -12,
+    height: width > 600 ? 50 : 40, // Adjust picker height
+    width: '100%',
+    color: '#333',
   },
-  footer: {
-    padding: width * 0.05,
-    backgroundColor: '#fff',
-  },
-  submitButton: {
-    backgroundColor: '#0198A5',
-    borderRadius: 25, // Adjusted to be more rounded
-    paddingVertical: width * 0.04, // Adjusted for better touch target
-    alignItems: 'center',
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: width * 0.045, // Adjusted for better readability
-    fontWeight: 'bold',
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 25,
+    marginVertical: '2.5%',
+    backgroundColor: '#f9f9f9',
+    paddingHorizontal: '3%',
   },
   kpicker: {
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: '#ccc',
     borderRadius: 25,
-    marginTop: 20,
-    width: '100%',
+    marginVertical: '2.5%',
+    paddingHorizontal: '5%',
+    backgroundColor: '#f9f9f9',
+  },
+  footer: {
+    paddingHorizontal: '5%',
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+    paddingBottom: Platform.OS === 'ios' ? '10%' : '5%', // Adjust for iOS safe area
+  },
+  submitButton: {
+    backgroundColor: '#0198A5',
+    borderRadius: 25,
+    paddingVertical: height > 800 ? 16 : 12, // Adjust padding for different screen heights
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: '5%',
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: width > 600 ? 18 : 16, // Larger text on larger screens
+    fontWeight: 'bold',
+  },
+  textFieldContainer: {
+    paddingHorizontal: '5%',
+    paddingVertical: '2%',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    marginVertical: '1%',
   },
 });
+
 
 export default Registration;

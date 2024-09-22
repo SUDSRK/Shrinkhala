@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const { width } = Dimensions.get('window'); // Get the screen width
 
 const Signup: React.FC = () => {
     const [inputValue, setInputValue] = useState<string>('');
@@ -20,8 +22,6 @@ const Signup: React.FC = () => {
     };
 
     const numberSubmit = async () => {
-        console.log('inputValue-', inputValue);
-
         if (inputValue.length === 10) {
             setNumberError(false);
 
@@ -72,7 +72,6 @@ const Signup: React.FC = () => {
                 </View>
 
                 <View style={styles.inputContainer}>
-
                     <TextInput
                         style={styles.input}
                         keyboardType="numeric"
@@ -104,7 +103,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     title: {
-        fontSize: 30,
+        fontSize: width * 0.08,
         fontWeight: 'bold',
         textAlign: 'center',
         color: '#0198A5',
@@ -114,12 +113,13 @@ const styles = StyleSheet.create({
         paddingTop: 40,
     },
     subTitle: {
-        fontSize: 20,
+        fontSize: width * 0.05,
         fontWeight: 'bold',
         textAlign: 'center',
     },
     form: {
         marginTop: 20,
+        paddingHorizontal: '5%',
     },
     spacer: {
         height: 20,
@@ -134,39 +134,35 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     inputContainer: {
-        flexDirection: 'row',
         alignItems: 'center',
-    },
-    backIcon: {
-        width: 20,
-        height: 20,
-        marginRight: 10,
     },
     input: {
         backgroundColor: '#f5f5f5',
         borderRadius: 50,
         padding: 15,
-        marginRight: 24,
-        flex: 1,
+        width: '100%',
+        maxWidth: 400,
     },
     errorText: {
         color: 'red',
         marginTop: 7,
-        marginLeft: 35,
+        textAlign: 'center',
     },
     buttonContainer: {
         marginTop: 30,
-        marginHorizontal: 24,
+        alignItems: 'center',
     },
     continueButton: {
         backgroundColor: '#0198A5',
         borderRadius: 50,
         paddingVertical: 10,
         alignItems: 'center',
+        width: '80%',
+        maxWidth: 300,
     },
     buttonText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: width * 0.04,
     },
 });
 
