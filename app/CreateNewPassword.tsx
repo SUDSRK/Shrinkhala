@@ -1,130 +1,146 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Alert, Dimensions, Platform, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 
-// Assuming the SVG and PNG images are correctly configured to be imported as React components or static resources
-// import BackIcon from '../../assets/back.svg'; // Use a library like 'react-native-svg' to handle SVGs
-// import createNewPasswordImage from '../../assets/createNewPassword.png'; // Direct import for PNG
+const { width, height } = Dimensions.get('window');
 
 const CreateNewPassword: React.FC = () => {
   const navigation = useNavigation<NavigationProp<any>>();
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
-
-  const backButtonHandler = () => {
-    navigation.navigate('ForgetOtpScreen');
-  };
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handlePasswordChange = (text: string) => {
     setPassword(text);
+    setErrorMessage(''); // Reset error message when input changes
   };
 
   const handleReEnteredPasswordChange = (text: string) => {
     setConfirmPassword(text);
+    setErrorMessage(''); // Reset error message when input changes
   };
 
   const handleSubmit = () => {
-    if (password === confirmPassword) {
-      // Passwords match, proceed with logic
-      console.log('Passwords match:', password);
-      Alert.alert("Password Changed");
+    if (!password || !confirmPassword) {
+      setErrorMessage('Both password fields are required');
+      return;
+    }
+    if (password.length < 8) {
+      setErrorMessage('Password must be at least 8 characters long');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match');
+      return;
+    }
+
+    // If everything is valid
+    try {
+      Alert.alert("Success", "Your password has been changed successfully.");
       navigation.navigate('loginpage');
-    } else {
-      // Passwords do not match, show error
-      setPasswordsMatch(false);
-      console.log('Passwords do not match');
+    } catch (error) {
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
     }
   };
 
   return (
-    <View style={styles.container}>
-      {/* <TouchableOpacity onPress={backButtonHandler}>
-        <Image source={BackIcon} style={styles.backIcon} />
-      </TouchableOpacity> */}
-      <Text style={styles.title}>Create New Password</Text>
-      <Image source={require('../assets/images/createNewPassword.png')} style={styles.image} />
-      <Text style={styles.instruction}>
-        Your new password must be different from the previously used password.
-      </Text>
-      <Text style={styles.label}>Enter New Password</Text>
-      <TextInput
-        secureTextEntry
-        style={styles.input}
-        maxLength={10}
-        value={password}
-        placeholder='Enter Password'
-        onChangeText={handlePasswordChange}
-      />
-      <Text style={styles.label}>Confirm Password</Text>
-      <TextInput
-        secureTextEntry
-        style={styles.input}
-        maxLength={10}
-        value={confirmPassword}
-        placeholder='Re-enter Password'
-        onChangeText={handleReEnteredPasswordChange}
-      />
-      {!passwordsMatch && <Text style={styles.errorMsg}>Passwords do not match</Text>}
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Save Password</Text>
-      </TouchableOpacity>
-    </View>
+      <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={styles.innerContainer}>
+            <Text style={styles.title}>Create New Password</Text>
+            <Image source={require('../assets/images/createNewPassword.png')} style={styles.image} />
+            <Text style={styles.instruction}>
+              Your new password must be different from the previously used password.
+            </Text>
+            <Text style={styles.label}>Enter New Password</Text>
+            <TextInput
+                secureTextEntry
+                style={styles.input}
+                maxLength={16}
+                value={password}
+                placeholder='Enter Password'
+                onChangeText={handlePasswordChange}
+            />
+            <Text style={styles.label}>Confirm Password</Text>
+            <TextInput
+                secureTextEntry
+                style={styles.input}
+                maxLength={16}
+                value={confirmPassword}
+                placeholder='Re-enter Password'
+                onChangeText={handleReEnteredPasswordChange}
+            />
+            {errorMessage ? <Text style={styles.errorMsg}>{errorMessage}</Text> : null}
+            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+              <Text style={styles.buttonText}>Save Password</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#fff',
   },
-  backIcon: {
-    width: 20,
-    height: 20,
+  innerContainer: {
+    padding: width * 0.05,
+    flex: 1,
+    justifyContent: 'center',
   },
   title: {
-    fontSize: 24,
+    fontSize: width > 600 ? 28 : 24,
     fontWeight: 'bold',
-    marginVertical: 20,
+    textAlign: 'center',
+    marginVertical: height * 0.02,
   },
   image: {
     width: '100%',
-    height: 200,
+    height: height * 0.25,
     resizeMode: 'contain',
-    marginVertical: 20,
+    marginVertical: height * 0.02,
   },
   instruction: {
-    fontSize: 16,
-    marginBottom: 20,
+    fontSize: width > 600 ? 18 : 16,
+    textAlign: 'center',
+    marginBottom: height * 0.02,
   },
   label: {
-    fontSize: 16,
-    marginBottom: 10,
+    fontSize: width > 600 ? 18 : 16,
+    marginBottom: height * 0.01,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 50,
-    padding: 10,
-    fontSize: 16,
-    marginBottom: 20,
+    paddingVertical: height * 0.015,
+    paddingHorizontal: width * 0.04,
+    fontSize: width > 600 ? 18 : 16,
+    marginBottom: height * 0.02,
+    width: '100%',
   },
   errorMsg: {
     color: 'red',
-    marginBottom: 20,
+    fontSize: width > 600 ? 16 : 14,
+    marginBottom: height * 0.02,
+    textAlign: 'center',
   },
   button: {
     backgroundColor: '#0198A5',
-    padding: 16,
+    paddingVertical: height * 0.02,
     borderRadius: 25,
     alignItems: 'center',
     width: '100%',
-    marginVertical: 16,
+    marginTop: height * 0.02,
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: width > 600 ? 18 : 16,
   },
 });
 

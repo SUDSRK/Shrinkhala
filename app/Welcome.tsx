@@ -3,8 +3,8 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'rea
 import { Link } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
-const logoHeight = height * 0.4; // Adjust the height of the logo relative to the screen height
-const logoWidth = width * 0.8; // Adjust the width of the logo relative to the screen width
+const logoHeight = height * 0.4;
+const logoWidth = width * 0.8;
 
 const Welcome: React.FC = () => {
     return (

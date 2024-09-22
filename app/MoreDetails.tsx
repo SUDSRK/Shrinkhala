@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, ScrollView,  Platform, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native';
+import { View, Text, TextInput, ScrollView, Platform, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { RadioButton } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -75,17 +75,18 @@ const MoreDetails: React.FC = () => {
 
   useEffect(() => {
     validateForm();
-  }, [otherFormData, isChecked]);
+  }, [otherFormData]);
 
   const handleCheckboxChange = (newValue: boolean) => {
     setIsChecked(newValue);
     setHideInputs(newValue);
     handleChangeLocal('sameAddress', newValue ? 'true' : 'false');
+    validateForm(); // Call validateForm to update button state
   };
 
   const handleChangeLocal = (name: keyof OtherFormData, value: string | boolean) => {
     setOtherFormData((prev) => ({ ...prev, [name]: value }));
-    validateForm();
+    validateForm(); // Validate form each time input changes
   };
 
   const validateForm = () => {
@@ -101,10 +102,9 @@ const MoreDetails: React.FC = () => {
     });
 
     // Check if terms and conditions are agreed to
-    const allValid = missingFields.length === 0 && isChecked && otherFormData.agreedToTerms === true;
+    const allValid = missingFields.length === 0 && otherFormData.agreedToTerms;
     setIsDisabled(!allValid);
   };
-
 
   const showAlert = (message: string) => {
     Alert.alert("Validation Error", message);
@@ -154,11 +154,10 @@ const MoreDetails: React.FC = () => {
         Kin_city: otherFormData.kinCity,
         Kin_district: otherFormData.kinDistrict,
       }),
-        referrerPolicy: 'strict-origin-when-cross-origin'
     })
         .then((response) => {
           if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(JSON.stringify(response));
           }
           return response.json();
         })
@@ -174,12 +173,9 @@ const MoreDetails: React.FC = () => {
   return (
       <View style={{ flex: 1 }}>
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 150 }}>
-          <View style={styles.header}>
-          </View>
-          <Text style={styles.subtitle}>Please share more details</Text>
+          <Text style={styles.subtitle}>Please share your Kin's detail.</Text>
           <Text style={styles.sectionTitle}>Patient's Next of Kin</Text>
 
-          {/* Radio Buttons */}
           <View style={styles.radioGroup}>
             <View style={styles.radioButton}>
               <RadioButton
@@ -233,7 +229,14 @@ const MoreDetails: React.FC = () => {
                       onValueChange={(itemValue) => handleChangeLocal('otherRelation', itemValue)}
                   >
                     <Picker.Item label="Relationship with Kin" value="" />
-                    {/* Add additional options here */}
+                    <Picker.Item label="Spouse" value="spouse" />
+                    <Picker.Item label="Son" value="son" />
+                    <Picker.Item label="Daughter" value="daughter" />
+                    <Picker.Item label="Father" value="father" />
+                    <Picker.Item label="Mother" value="mother" />
+                    <Picker.Item label="Brother" value="brother" />
+                    <Picker.Item label="Sister" value="sister" />
+                    <Picker.Item label="Other" value="other" />
                   </Picker>
                 </View>
               </>
@@ -262,13 +265,15 @@ const MoreDetails: React.FC = () => {
           )}
 
           {/* Terms and Conditions Checkbox */}
-          {/* Terms and Conditions Checkbox */}
           <View style={styles.checkboxContainer}>
             <BouncyCheckbox
                 fillColor="#0198A5"
-                size={25} // Adjust the size of the checkbox if needed
-                onPress={(isChecked: boolean) => handleChangeLocal('agreedToTerms', isChecked)}
-                iconStyle={{ borderColor: "#0198A5", borderRadius: 4 }} // Add icon style
+                size={25}
+                onPress={(isChecked: boolean) => {
+                  handleChangeLocal('agreedToTerms', isChecked);
+                  validateForm(); // Validate form whenever this is updated
+                }}
+                iconStyle={{ borderColor: "#0198A5", borderRadius: 4 }}
                 textComponent={
                   <View style={styles.termsContainer}>
                     <Text style={styles.checkboxLabel}>I agree to the </Text>
@@ -279,7 +284,6 @@ const MoreDetails: React.FC = () => {
                 }
             />
           </View>
-
         </ScrollView>
 
         <View style={styles.footer}>
@@ -300,14 +304,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: '5%',
     backgroundColor: 'white',
-  },
-  header: {
-    marginBottom: '5%',
-  },
-  title: {
-    fontSize: width > 600 ? 28 : 24,
-    textAlign: 'center',
-    color: '#0198A5',
   },
   subtitle: {
     fontSize: width > 600 ? 20 : 16,
@@ -363,7 +359,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   checkboxLabel: {
-    fontSize: width > 600 ? 16 : 14, // Adjust font size for tablets and larger devices
+    fontSize: width > 600 ? 16 : 14,
     color: '#0198A5',
   },
   termsText: {
@@ -377,15 +373,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
-    paddingBottom: Platform.OS === 'ios' ? '10%' : '5%', // Adjust for iOS safe area
-    position: 'absolute', // Ensures the footer stays at the bottom
-    bottom: 0, // Place it at the bottom of the screen
-    width: '100%', // Make sure it covers the full width
+    paddingBottom: Platform.OS === 'ios' ? '10%' : '5%',
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
   },
   submitButton: {
     backgroundColor: '#0198A5',
-    paddingVertical: height > 800 ? 16 : 12, // Adjust padding based on screen height
-    borderRadius: 25, // Adjust border radius for a rounded button
+    paddingVertical: height > 800 ? 16 : 12,
+    borderRadius: 25,
     alignItems: 'center',
   },
   disabledButton: {
@@ -393,7 +389,7 @@ const styles = StyleSheet.create({
   },
   submitButtonText: {
     color: 'white',
-    fontSize: width > 600 ? 18 : 16, // Adjust font size for larger devices
+    fontSize: width > 600 ? 18 : 16,
     fontWeight: 'bold',
   },
 });

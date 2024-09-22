@@ -249,12 +249,10 @@ const Registration: React.FC<RegistrationFormProps> = () => {
             keyboardType="numeric"
           />
         </View>
-        <View style={styles.row}>
-          <View style={[styles.input, styles.halfInput, styles.marginRight]}>
+          <View style={styles.kpicker}>
             <Picker
               selectedValue={formData.gender}
               onValueChange={(value) => handleChange('gender', value)}
-              style={styles.picker}
             >
               <Picker.Item style={{ color: 'grey' }} label="Gender" value="" />
               <Picker.Item label="Male" value="male" />
@@ -262,11 +260,10 @@ const Registration: React.FC<RegistrationFormProps> = () => {
               <Picker.Item label="Others" value="others" />
             </Picker>
           </View>
-          <View style={[styles.input, styles.halfInput, styles.marginLeft]}>
+          <View style={styles.kpicker}>
             <Picker
               selectedValue={formData.maritalStatus}
               onValueChange={(value) => handleChange('maritalStatus', value)}
-              style={styles.picker}
             >
               <Picker.Item style={{ color: 'grey' }} label="Marital Status" value="" />
               <Picker.Item label="Single" value="single" />
@@ -274,7 +271,6 @@ const Registration: React.FC<RegistrationFormProps> = () => {
               <Picker.Item label="Divorced" value="divorced" />
               <Picker.Item label="Widowed" value="widowed" />
             </Picker>
-          </View>
         </View>
         <TextInput
           style={styles.input}
@@ -461,9 +457,14 @@ const styles = StyleSheet.create({
     marginLeft: '2.5%',
   },
   picker: {
-    height: width > 600 ? 50 : 40, // Adjust picker height
+    height: width > 600 ? 40 : 30, // Adjust picker height
     width: '100%',
     color: '#333',
+    alignItems:'center',
+    justifyContent: "center",
+    display:'flex',
+    paddingVertical: '3%',
+
   },
   pickerContainer: {
     borderWidth: 1,

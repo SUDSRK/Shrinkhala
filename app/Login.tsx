@@ -10,7 +10,6 @@ const Login: React.FC = () => {
     const [errorMsg, setErrorMsg] = useState<string>('');
     const [loginMethod, setLoginMethod] = useState<'mobile' | 'uid'>('mobile'); // Default to login via mobile
     const [continueDisable, setContinueDisable] = useState<boolean>(true);
-
     const handleUserIdChange = (text: string) => {
         setUserId(text);
         if (text.length === 10) {

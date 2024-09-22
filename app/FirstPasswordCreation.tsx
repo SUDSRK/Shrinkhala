@@ -7,23 +7,23 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Dimensions,
+  ScrollView,
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Importing SVG and PNG images
-// import BackIcon from '../../assets/back.svg'; // Consider using a library to handle SVG
-// import createNewPasswordImage from '../assets/images/createNewPassword.png';
 
 interface UserData {
   userName: string | null;
   phoneNumber: string | null;
 }
 
+const { width, height } = Dimensions.get('window');
+
 const FirstPasswordCreation: React.FC = () => {
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const navigation = useNavigation<NavigationProp<any>>();
 
   // Function to get user data from AsyncStorage
@@ -33,141 +33,161 @@ const FirstPasswordCreation: React.FC = () => {
     return { userName, phoneNumber };
   };
 
-  // Navigate back to the previous screen
-  const backButtonHandler = () => {
-    navigation.navigate('MoreDetails');
-  };
-
   // Update password state
   const handlePasswordChange = (text: string) => {
     setPassword(text);
+    setErrorMessage(''); // Reset error message when input changes
   };
 
   // Update confirm password state
   const handleReEnteredPasswordChange = (text: string) => {
     setConfirmPassword(text);
+    setErrorMessage(''); // Reset error message when input changes
   };
 
   // Handle the form submission
   const handleSubmit = async () => {
-    if (password === confirmPassword) {
-      const { userName, phoneNumber } = await getUserData();
-      try {
-        const response = await fetch('https://api.shrinkhala.in/patient/password', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            user_id: userName,
-            phone_number: phoneNumber,
-            password: password,
-          }),
-        });
-        if (response.ok) {
-          navigation.navigate('Dashboard');
-        } else {
-          console.error('Error:', response.statusText);
-          Alert.alert('Error', 'Failed to save the password');
-        }
-      } catch (error) {
-        console.error('Error:', error);
+    if (!password || !confirmPassword) {
+      setErrorMessage('Both password fields are required');
+      return;
+    }
+    if (password.length < 8) {
+      setErrorMessage('Password must be at least 8 characters long');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match');
+      return;
+    }
+
+    const { userName, phoneNumber } = await getUserData();
+    try {
+      const response = await fetch('https://api.shrinkhala.in/patient/password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: userName,
+          phone_number: phoneNumber,
+          password: password,
+        }),
+      });
+      if (response.ok) {
+        Alert.alert('Success', 'Your password has been saved successfully.');
+        navigation.navigate('Dashboard');
+      } else {
+        console.error('Error:', response.statusText);
         Alert.alert('Error', 'Failed to save the password');
       }
-      // navigation.navigate('Dashboard'); // Uncomment when not connected to backend
-    } else {
-      setPasswordsMatch(false);
+    } catch (error) {
+      console.error('Error:', error);
+      Alert.alert('Error', 'Failed to save the password');
     }
   };
 
   return (
-    <View style={styles.container}>
-      {/* <TouchableOpacity onPress={backButtonHandler}>
-        <Image source={BackIcon} style={styles.backIcon} />
-      </TouchableOpacity> */}
-      <Text style={styles.title}>Create Password</Text>
-      <Image source={require('../assets/images/createNewPassword.png')} style={styles.image} />
-      <Text style={styles.instruction}>
-        Your Password must be strong and easy to remember
-      </Text>
-      <Text style={styles.label}>Enter New Password</Text>
-      <TextInput
-        secureTextEntry
-        style={styles.input}
-        maxLength={10}
-        value={password}
-        placeholder="Enter Password"
-        onChangeText={handlePasswordChange}
-      />
-      <Text style={styles.label}>Confirm Password</Text>
-      <TextInput
-        secureTextEntry
-        style={styles.input}
-        maxLength={10}
-        value={confirmPassword}
-        placeholder="Re-enter Password"
-        onChangeText={handleReEnteredPasswordChange}
-      />
-      {!passwordsMatch && (
-        <Text style={styles.errorMsg}>Passwords do not match</Text>
-      )}
-      <TouchableOpacity style={styles.saveButton} onPress={handleSubmit}>
-        <Text style={styles.saveButtonText}>Save Password</Text>
-      </TouchableOpacity>
-    </View>
+      <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.scrollViewContainer}
+          keyboardShouldPersistTaps="always" // Ensure taps are registered even when the keyboard is open
+      >
+        <View style={styles.innerContainer}>
+          <Text style={styles.title}>Create Password</Text>
+          <Image
+              source={require('../assets/images/createNewPassword.png')}
+              style={styles.image}
+          />
+          <Text style={styles.instruction}>
+            Your Password must be strong and easy to remember
+          </Text>
+          <Text style={styles.label}>Enter New Password</Text>
+          <TextInput
+              secureTextEntry
+              style={styles.input}
+              maxLength={16}
+              value={password}
+              placeholder="Enter Password"
+              onChangeText={handlePasswordChange}
+          />
+          <Text style={styles.label}>Confirm Password</Text>
+          <TextInput
+              secureTextEntry
+              style={styles.input}
+              maxLength={16}
+              value={confirmPassword}
+              placeholder="Re-enter Password"
+              onChangeText={handleReEnteredPasswordChange}
+          />
+          {errorMessage ? <Text style={styles.errorMsg}>{errorMessage}</Text> : null}
+          <TouchableOpacity style={styles.saveButton} onPress={handleSubmit} activeOpacity={0.8}>
+            <Text style={styles.saveButtonText}>Save Password</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#fff',
   },
-  backIcon: {
-    width: 20,
-    height: 20,
+  scrollViewContainer: {
+    paddingHorizontal: '5%', // Adjust padding for better responsiveness
+    paddingTop: 20, // Start the content from the top
+  },
+  innerContainer: {
+    flex: 1,
   },
   title: {
-    fontSize: 24,
+    fontSize: width > 600 ? 24 : 20,
     fontWeight: 'bold',
-    marginVertical: 20,
+    textAlign: 'center',
+    marginVertical: 10,
   },
   image: {
     width: '100%',
-    height: 200,
+    height: height * 0.25,
     resizeMode: 'contain',
-    marginVertical: 20,
+    marginVertical: 10,
   },
   instruction: {
-    fontSize: 16,
-    marginBottom: 20,
+    fontSize: width > 600 ? 16 : 14,
+    textAlign: 'center',
+    marginBottom: 10,
   },
   label: {
-    fontSize: 16,
-    marginBottom: 10,
+    fontSize: width > 600 ? 16 : 14,
+    marginBottom: 5,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    padding: 10,
-    fontSize: 16,
-    marginBottom: 20,
-    borderRadius: 50,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    fontSize: width > 600 ? 16 : 14,
+    marginBottom: 15,
+    borderRadius: 25,
+    width: '100%',
   },
   errorMsg: {
     color: 'red',
-    marginBottom: 20,
+    fontSize: width > 600 ? 14 : 12,
+    marginBottom: 10,
+    textAlign: 'center',
   },
   saveButton: {
     backgroundColor: '#0198A5',
-    padding: 15,
-    borderRadius: 50,
+    paddingVertical: 12,
+    borderRadius: 25,
     alignItems: 'center',
+    width: '100%',
+    marginTop: 10,
   },
   saveButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: width > 600 ? 16 : 14,
   },
 });
 
