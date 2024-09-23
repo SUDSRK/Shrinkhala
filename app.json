@@ -2,7 +2,7 @@
   "expo": {
     "name": "Shrinkhala",
     "slug": "Shrinkhala",
-    "version": "1.0.4",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/icon-3.png",
     "scheme": "myapp",
@@ -22,7 +22,7 @@
         "ACCESS_MEDIA_LOCATION"
       ],
       "package": "com.sudsrk.shrinkhala",
-      "versionCode": 4
+      "versionCode": 6
     },
     "web": {
       "bundler": "metro",
