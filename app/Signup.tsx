@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const { width } = Dimensions.get('window'); // Get the screen width
+const { width } = Dimensions.get('window');
 
 const Signup: React.FC = () => {
     const [inputValue, setInputValue] = useState<string>('');
@@ -58,7 +58,11 @@ const Signup: React.FC = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Shrinkhala</Text>
+                <Image
+                    source={require('../assets/images/icon-blue.png')} // Replace this path with your actual image path
+                    style={styles.logo}
+                    resizeMode="contain"
+                />
             </View>
             <View style={styles.subHeader}>
                 <Text style={styles.subTitle}>Please register yourself</Text>
@@ -100,17 +104,16 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        marginTop: 20,
+        marginTop: 40,
+        alignItems: 'center', // Center the logo horizontally
     },
-    title: {
-        fontSize: width * 0.08,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: '#0198A5',
+    logo: {
+        width: width * 0.4, // Adjust the size according to your preference
+        height: width * 0.18, // Adjust the height as needed
     },
     subHeader: {
-        marginTop: 20,
-        paddingTop: 40,
+        marginTop: 5,
+        paddingTop: 5,
     },
     subTitle: {
         fontSize: width * 0.05,
@@ -118,7 +121,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     form: {
-        marginTop: 20,
+        marginTop: 10,
         paddingHorizontal: '5%',
     },
     spacer: {

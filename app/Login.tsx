@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Get the screen dimensions
+const { width, height } = Dimensions.get('window');
 
 const Login: React.FC = () => {
     const router = useRouter();
     const [userId, setUserId] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [errorMsg, setErrorMsg] = useState<string>('');
-    const [loginMethod, setLoginMethod] = useState<'mobile' | 'uid'>('mobile'); // Default to login via mobile
+    const [loginMethod, setLoginMethod] = useState<'mobile' | 'uid'>('mobile');
     const [continueDisable, setContinueDisable] = useState<boolean>(true);
+
     const handleUserIdChange = (text: string) => {
         setUserId(text);
         if (text.length === 10) {
@@ -28,7 +32,6 @@ const Login: React.FC = () => {
         } else {
             const apiUrl = loginMethod === 'mobile' ? 'https://api.shrinkhala.in/patient/signin_phone' : 'https://api.shrinkhala.in/patient/login_uuid';
             const payload = loginMethod === 'mobile' ? { phone_number: userId, password: password } : { user_id: userId, password: password };
-            console.log(apiUrl + ' ' + JSON.stringify(payload));
 
             fetch(apiUrl, {
                 method: 'POST',
@@ -47,9 +50,8 @@ const Login: React.FC = () => {
                 .then(data => {
                     if (data.user_id) {
                         const { user_id } = data;
-                        AsyncStorage.setItem('userName', user_id); // Save user_id to local storage
+                        AsyncStorage.setItem('userName', user_id);
 
-                        // Fetch additional user data
                         return fetch(`https://api.shrinkhala.in/patient/${user_id}`, {
                             method: 'GET',
                             headers: {
@@ -68,16 +70,12 @@ const Login: React.FC = () => {
                     return response.json();
                 })
                 .then(userData => {
-                    // Save phone number and first name + last name to local storage
                     const { phone_number, first_name, last_name } = userData;
                     AsyncStorage.setItem('phone_number', phone_number.toString());
                     AsyncStorage.setItem('fullName', `${first_name} ${last_name}`);
-
-                    // Navigate to dashboard upon successful login
                     router.push('/Dashboard');
                 })
                 .catch(error => {
-                    // Handle error
                     setErrorMsg("Phone Number/UserID or Password is incorrect");
                     console.error('There was a problem with the login request:', error);
                 });
@@ -86,7 +84,13 @@ const Login: React.FC = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Shrinkhala</Text>
+            <View style={styles.header}>
+                <Image
+                    source={require('../assets/images/icon-blue.png')} // Replace this path with your actual image path
+                    style={styles.logo}
+                    resizeMode="contain"
+                />
+            </View>
             <Text style={styles.subtitle}>Login via</Text>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity
@@ -157,31 +161,33 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
-        padding: 20,
+        paddingHorizontal: width * 0.05, // Adjust padding based on screen width
         justifyContent: 'center',
     },
-    title: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: '#0198A5',
-        marginBottom: 20,
+    header: {
+        marginBottom: height * 0.02, // Responsive margin
+        alignItems: 'center', // Center the logo horizontally
+    },
+    logo: {
+        width: width * 0.5, // Responsive width
+        height: height * 0.1, // Responsive height
     },
     subtitle: {
-        fontSize: 18,
+        fontSize: width * 0.045, // Responsive font size
         fontWeight: 'bold',
         color: '#0198A5',
-        marginBottom: 10,
+        marginBottom: height * 0.015, // Responsive margin
+        textAlign: 'center',
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        marginBottom: 20,
+        marginBottom: height * 0.02, // Responsive margin
     },
     loginButton: {
         backgroundColor: '#4fd1c5',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
+        paddingVertical: height * 0.012, // Responsive padding
+        paddingHorizontal: width * 0.05, // Responsive padding
         borderRadius: 8,
     },
     activeButton: {
@@ -189,47 +195,48 @@ const styles = StyleSheet.create({
     },
     loginButtonText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: width * 0.04, // Responsive font size
         fontWeight: 'bold',
     },
     inputContainer: {
-        marginBottom: 20,
+        marginBottom: height * 0.015, // Responsive margin
     },
     label: {
-        fontSize: 16,
+        fontSize: width * 0.04, // Responsive font size
         color: '#718096',
-        marginBottom: 5,
+        marginBottom: height * 0.005, // Responsive margin
     },
     input: {
-        height: 40,
+        height: height * 0.05, // Responsive height
         borderColor: '#ccc',
         borderWidth: 1,
         borderRadius: 8,
-        paddingHorizontal: 10,
+        paddingHorizontal: width * 0.03, // Responsive padding
     },
     submitButton: {
         backgroundColor: '#0198A5',
-        padding: 15,
+        paddingVertical: height * 0.02, // Responsive padding
         borderRadius: 8,
         alignItems: 'center',
     },
     submitButtonText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: width * 0.045, // Responsive font size
         fontWeight: 'bold',
     },
     errorMsg: {
         color: 'red',
-        marginBottom: 20,
+        marginBottom: height * 0.01, // Responsive margin
+        textAlign: 'center',
     },
     linkText: {
         color: '#0198A5',
         textAlign: 'center',
-        marginTop: 10,
+        marginTop: height * 0.01, // Responsive margin
     },
     signUpText: {
         textAlign: 'center',
-        marginTop: 20,
+        marginTop: height * 0.02, // Responsive margin
     },
     signUpLink: {
         color: '#0198A5',
@@ -242,11 +249,11 @@ const styles = StyleSheet.create({
         bottom: 0,
         alignItems: 'center',
         justifyContent: 'center',
-        height: 20,
+        height: height * 0.05, // Responsive height
     },
     footerText: {
         color: '#333',
-        fontSize: 12,
+        fontSize: width * 0.03, // Responsive font size
     },
 });
 

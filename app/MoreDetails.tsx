@@ -111,11 +111,44 @@ const MoreDetails: React.FC = () => {
   };
 
   const registerFormSubmit = () => {
+    const body = {
+      phone_number: formData.mobileNumber,
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      date_of_birth: formData.dob,
+      age: formData.age,
+      gender: formData.gender,
+      marital_status: formData.maritalStatus,
+      alternate_mobile_number: formData.alternateNumber,
+      p_house_no: formData.house,
+      p_locality: formData.locality,
+      p_pin_code: formData.pincode,
+      p_state: formData.state,
+      p_city: formData.city,
+      p_district: formData.district,
+      address: `${formData.house} ${formData.locality} ${formData.state} ${formData.city} ${formData.district}`,
+      care_giver_first_name: formData.careFirstName,
+      care_giver_last_name: formData.careLastName,
+      care_giver_mobile_number: formData.careMobNo,
+      care_giver_relation: formData.careRelation,
+      same_address: otherFormData.sameAddress,
+      Kin_First_name: otherFormData.otherFirstName,
+      Kin_Last_name: otherFormData.otherLastName,
+      Kin_mobile_number: otherFormData.othermobileNumber,
+      Kin_relationship_with_patient: otherFormData.otherRelation,
+      care_giver_or_other: otherFormData.caregiverOrOther,
+      Kin_House_no: otherFormData.kinHouse,
+      Kin_Locality: otherFormData.kinLocality,
+      Kin_pin_code: otherFormData.kinPincode,
+      Kin_state: otherFormData.kinState,
+      Kin_city: otherFormData.kinCity,
+      Kin_district: otherFormData.kinDistrict,
+    }
+    console.log(body)
     if (isDisabled) {
       showAlert("Please complete all mandatory fields and agree to the terms and conditions.");
       return;
     }
-
     fetch('https://api.shrinkhala.in/patient', {
       method: 'POST',
       headers: {
@@ -154,6 +187,7 @@ const MoreDetails: React.FC = () => {
         Kin_city: otherFormData.kinCity,
         Kin_district: otherFormData.kinDistrict,
       }),
+
     })
         .then((response) => {
           if (!response.ok) {

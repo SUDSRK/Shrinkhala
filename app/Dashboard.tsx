@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { SafeAreaView, StyleSheet, View, TouchableOpacity, Text, Alert, Linking, Dimensions } from "react-native";
+import {
+    SafeAreaView,
+    StyleSheet,
+    View,
+    TouchableOpacity,
+    Text,
+    Alert,
+    Linking,
+    Dimensions,
+    BackHandler,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UserProfile from "../components/Dashboard/UserProfile";
 import ReportList from "../components/Dashboard/ReportList";
@@ -14,7 +24,6 @@ import * as FileSystem from "expo-file-system";
 // Get screen dimensions for responsiveness
 const { width, height } = Dimensions.get("window");
 
-// Define the report type
 type Report = {
     test_name: string;
     test_type: string;
@@ -41,18 +50,38 @@ const Dashboard = () => {
             setShowModal(false);
             setShowSecondModal(false);
             setCameraVisible(false);
+
+            const backAction = () => {
+                Alert.alert("Hold on!", "Are you sure you want to exit the app?", [
+                    {
+                        text: "Cancel",
+                        onPress: () => null,
+                        style: "cancel",
+                    },
+                    { text: "OK", onPress: () => BackHandler.exitApp() },
+                ]);
+                return true;
+            };
+
+            const backHandler = BackHandler.addEventListener(
+                "hardwareBackPress",
+                backAction
+            );
+
+            return () => backHandler.remove();
         }, [])
     );
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const storedUserName = await AsyncStorage.getItem('userName');
-                const storedName = await AsyncStorage.getItem('fullName');
+                const storedUserName = await AsyncStorage.getItem("userName");
+                const storedName = await AsyncStorage.getItem("fullName");
                 if (storedUserName) setUserName(storedUserName);
                 if (storedName) setName(storedName);
             } catch (error) {
-                console.error('Failed to load user data from storage', error);
+                console.error("Failed to load user data from storage", error);
+                navigation.navigate("Welcome");
             }
         };
         fetchUserData();
@@ -66,7 +95,9 @@ const Dashboard = () => {
 
     const fetchReports = async () => {
         try {
-            const response = await fetch(`https://extract.shrinkhala.in/reports/${userName}`);
+            const response = await fetch(
+                `https://extract.shrinkhala.in/reports/${userName}`
+            );
             const data = await response.json();
             setReports(data);
         } catch (error) {
@@ -99,7 +130,7 @@ const Dashboard = () => {
     };
 
     const handleUploadPDF = async () => {
-        setShowSecondModal(false)
+        setShowSecondModal(false);
         setShowModal(false);
         const permissionGranted = await getPermission();
         if (!permissionGranted) return;
@@ -142,11 +173,11 @@ const Dashboard = () => {
             const selectedFiles = result.assets.slice(0, 5).map((file) => ({
                 uri: file.uri,
                 type: file.mimeType,
-                name: file.fileName || `file_${Date.now()}`
-        }));
-            navigation.navigate('Preview', { files: selectedFiles, userName });
+                name: file.fileName || `file_${Date.now()}`,
+            }));
+            navigation.navigate("Preview", { files: selectedFiles, userName });
         } else {
-            Alert.alert('No file selected', 'Please select a file.');
+            Alert.alert("No file selected", "Please select a file.");
         }
     };
 
@@ -210,7 +241,6 @@ const Dashboard = () => {
                 />
             </View>
 
-            {/* Fixed Footer Section */}
             <View style={styles.footerContainer}>
                 <TouchableOpacity
                     style={styles.footerTab}
@@ -224,7 +254,12 @@ const Dashboard = () => {
                         size={width * 0.08}
                         color={activeTab === "Profile" ? "#0198A5" : "grey"}
                     />
-                    <Text style={[styles.footerTabText, activeTab === "Profile" && styles.activeFooterTabText]}>
+                    <Text
+                        style={[
+                            styles.footerTabText,
+                            activeTab === "Profile" && styles.activeFooterTabText,
+                        ]}
+                    >
                         Profile
                     </Text>
                 </TouchableOpacity>
@@ -237,7 +272,12 @@ const Dashboard = () => {
                         size={width * 0.08}
                         color={activeTab === "Home" ? "#0198A5" : "grey"}
                     />
-                    <Text style={[styles.footerTabText, activeTab === "Home" && styles.activeFooterTabText]}>
+                    <Text
+                        style={[
+                            styles.footerTabText,
+                            activeTab === "Home" && styles.activeFooterTabText,
+                        ]}
+                    >
                         Home
                     </Text>
                 </TouchableOpacity>

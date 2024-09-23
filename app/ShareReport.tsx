@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import {View, Text, TouchableOpacity, Modal, StyleSheet, ScrollView, Alert, Button} from "react-native";
+import { View, Text, TouchableOpacity, Modal, StyleSheet, ScrollView, Alert, Button, Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import OtpPopup from "@/components/OTPPopup";
+
 interface Doctor {
     id: string;
     name: string;
@@ -15,6 +16,8 @@ interface QRData {
     full_name: string;
     name_of_hospital: string;
 }
+
+const { width, height } = Dimensions.get("window");
 
 const ShareReport = () => {
     const [userName, setUserName] = useState<string>('');
@@ -30,30 +33,136 @@ const ShareReport = () => {
     const [permission, requestPermission] = useCameraPermissions();
 
     useEffect(() => {
+        (async () => {
+            try {
+                const username = await AsyncStorage.getItem('userName');
+                if (username) {
+                    setUserName(username);
+                } else {
+                    console.error("No user name found in AsyncStorage.");
+                }
+            } catch (error) {
+                console.error('Failed to fetch username from AsyncStorage', error);
+            }
+        })();
+    }, []);
+
+    useEffect(() => {
         if (permission) {
             setHasPermission(permission.granted);
         }
     }, [permission]);
 
     useEffect(() => {
-        const fetchUserName = async () => {
-            try {
-                const username = await AsyncStorage.getItem('userName');
-                if (username) {
-                    setUserName(username);
-                }
-                console.log("Fetched username:", username);
-            } catch (error) {
-                console.error('Failed to fetch username from AsyncStorage', error);
+        if (userName) {
+            fetchDoctorsList();
+        }
+    }, [userName]);
+
+    const fetchDoctorsList = async () => {
+        try {
+            const response = await fetch(`https://api.shrinkhala.in/patient/${userName}/doctors`);
+            if (response.ok) {
+                const data = await response.json();
+                const transformedData = data.map((doctor: any) => ({
+                    id: doctor.user_id,
+                    name: `${doctor.first_name} ${doctor.last_name}`
+                }));
+                setDoctorsList(transformedData);
+            } else {
+                console.error('Error fetching doctors data:', response.statusText);
             }
-        };
+        } catch (error) {
+            console.error('Error fetching doctors data:', error);
+            Alert.alert("Error", "Unable to fetch doctors list. Please try again later.");
+        }
+    };
 
-        fetchUserName();
-    }, []);
+    const handleRemoveDoctor = async (doctorId: string) => {
+        try {
+            const response = await fetch(`https://api.shrinkhala.in/patient/${userName}/doctors/${doctorId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            if (response.ok) {
+                const updatedDoctorsList = doctorsList.filter(doctor => doctor.id !== doctorId);
+                setDoctorsList(updatedDoctorsList);
+                Alert.alert("Success", "Doctor removed successfully.");
+            } else {
+                console.error('Error removing doctor:', response.statusText);
+                Alert.alert("Error", "Unable to remove doctor. Please try again.");
+            }
+        } catch (error) {
+            console.error('Error removing doctor:', error);
+            Alert.alert("Error", "An error occurred while removing the doctor. Please try again.");
+        }
+    };
 
+    const handleGenerateOTP = async () => {
+        try {
+            const response = await fetch('https://api.shrinkhala.in/patient/generate_otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userName }),
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setOtp(data.otp);
+                setShowOtpPopup(true);
+            } else {
+                console.error('Error generating OTP:', response.statusText);
+                Alert.alert("Error", "Unable to generate OTP. Please try again.");
+            }
+        } catch (error) {
+            console.error('Error generating OTP:', error);
+            Alert.alert("Error", "An error occurred while generating OTP. Please try again.");
+        }
+    };
 
-    const handleScannerOpen = () => {
-        setShowScannerModal(true);
+    const handleScan = ({ data }: { data: string }) => {
+        setScanned(true);
+        try {
+            const scannedText = JSON.parse(data);
+            handleLinkDoctor(scannedText);
+        } catch (error) {
+            console.error('Invalid QR data format:', error);
+            Alert.alert("Error", "Invalid QR data format.");
+            setScanned(false);
+        }
+    };
+
+    const handleLinkDoctor = async (scannedData: QRData) => {
+        try {
+            const response = await fetch('https://api.shrinkhala.in/doctor/patient', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ doctor_id: scannedData.doctor_id, patient_id: userName }),
+            });
+
+            if (response.ok) {
+                setQrData(scannedData);
+                setShowScannerModal(false);
+                setShowSuccessModal(true);
+            } else {
+                console.error('Error linking doctor:', response.statusText);
+                Alert.alert("Error", "Unable to link doctor. Please try again.");
+            }
+        } catch (error) {
+            console.error('Error linking doctor:', error);
+            Alert.alert("Error", "An error occurred while linking the doctor. Please try again.");
+        }
+    };
+
+    const requestCameraPermission = async () => {
+        try {
+            const { granted } = await requestPermission();
+            if (!granted) {
+                Alert.alert("Permission Denied", "Camera permission is required to scan QR codes.");
+            }
+        } catch (error) {
+            console.error("Error requesting camera permission:", error);
+            Alert.alert("Error", "Unable to request camera permission.");
+        }
     };
 
     const closeScannerModal = () => {
@@ -66,120 +175,33 @@ const ShareReport = () => {
     };
 
     useEffect(() => {
-        if (userName) {
-            fetch(`https://api.shrinkhala.in/patient/${userName}/doctors`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            })
-                .then(response => response.json())
-                .then(data => {
-                    const transformedData = data.map((doctor: any) => ({
-                        id: doctor.user_id,
-                        name: `${doctor.first_name} ${doctor.last_name}`
-                    }));
-                    setDoctorsList(transformedData);
-                })
-                .catch(error => {
-                    console.error('Error fetching doctors data:', error);
-                });
+        if (permission === null) {
+            requestCameraPermission();
         }
-    }, [userName]);
+    }, [permission]);
 
-    const handleRemoveDoctor = (doctorId: string) => {
-        fetch(`https://api.shrinkhala.in/patient/${userName}/doctors/${doctorId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                const updatedDoctorsList = doctorsList.filter(doctor => doctor.id !== doctorId);
-                setDoctorsList(updatedDoctorsList);
-            })
-            .catch(error => {
-                console.error('Error removing doctor:', error);
-            });
-    };
-
-    const handleScan = ({ data }: { data: string }) => {
-        setScanned(true);
-        if (data) {
-            const scannedText = JSON.parse(data);
-
-            fetch('https://api.shrinkhala.in/doctor/patient', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    doctor_id: scannedText.doctor_id,
-                    patient_id: userName
-                })
-            })
-                .then(response => response.json())
-                .then(responseData => {
-                    setQrData({
-                        ...scannedText,
-                        doctor_id: scannedText.doctor_id,
-                        name_of_hospital: scannedText.name_of_hospital,
-                        full_name: scannedText.full_name
-                    });
-                    setShowScannerModal(false);
-                    setShowSuccessModal(true);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                });
-        }
-    };
-
-    const handleGenerateOTP = () => {
-        fetch('https://api.shrinkhala.in/patient/generate_otp', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                user_id: userName
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                const otp = data.otp;
-                setOtp(otp);
-                setShowOtpPopup(true)
-            })
-            .catch(error => {
-                console.error('Error generating OTP:', error);
-            });
-    };
-
-    if (permission === null) {
-        return <View />;
-    }
-    if (!hasPermission) {
-        <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
-    </View>
+    if (permission === null || !hasPermission) {
+        return (
+            <View style={styles.permissionContainer}>
+                <Text style={styles.permissionText}>We need your permission to show the camera</Text>
+                <Button onPress={requestCameraPermission} title="Grant Permission" />
+            </View>
+        );
     }
 
     return (
-        <View style={{ flex: 1, backgroundColor: "white" }}>
-            <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <Text style={styles.title}>Share your Reports</Text>
                 <Text style={styles.subtitle}>All your Reports will be shared with the doctor</Text>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.button} onPress={handleGenerateOTP}>
-                        <MaterialIcons name="lock" size={24} color="#0198A5" />
+                        <MaterialIcons name="lock" size={width * 0.06} color="#0198A5" />
                         <Text style={styles.buttonText}>Via OTP</Text>
                     </TouchableOpacity>
                     <Text style={styles.orText}>OR</Text>
-                    <TouchableOpacity style={styles.button} onPress={handleScannerOpen}>
-                        <MaterialIcons name="qr-code-scanner" size={24} color="#0198A5" />
+                    <TouchableOpacity style={styles.button} onPress={() => setShowScannerModal(true)}>
+                        <MaterialIcons name="qr-code-scanner" size={width * 0.06} color="#0198A5" />
                         <Text style={styles.buttonText}>Via QR Scanner</Text>
                     </TouchableOpacity>
                 </View>
@@ -197,33 +219,21 @@ const ShareReport = () => {
                     ))}
                 </View>
             </ScrollView>
-            <Modal
-                visible={showScannerModal}
-                transparent={true}
-                animationType="slide"
-                onRequestClose={closeScannerModal}
-            >
+            <Modal visible={showScannerModal} transparent={true} animationType="slide" onRequestClose={closeScannerModal}>
                 <View style={styles.modalBackground}>
                     <View style={styles.modalContent}>
                         <CameraView
                             onBarcodeScanned={scanned ? undefined : handleScan}
-                            barcodeScannerSettings={{
-                                barcodeTypes: ["qr"],
-                            }}
                             style={styles.camera}
+                            barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
                         />
                         <TouchableOpacity style={styles.closeButton} onPress={closeScannerModal}>
-                            <MaterialIcons name="close" size={24} color="white" />
+                            <MaterialIcons name="close" size={width * 0.06} color="white" />
                         </TouchableOpacity>
                     </View>
                 </View>
             </Modal>
-            <Modal
-                visible={showSuccessModal}
-                transparent={true}
-                animationType="slide"
-                onRequestClose={closeSuccessModal}
-            >
+            <Modal visible={showSuccessModal} transparent={true} animationType="slide" onRequestClose={closeSuccessModal}>
                 <View style={styles.modalBackground}>
                     <View style={styles.successModalContent}>
                         <Text style={styles.successTitle}>Shared Successfully!</Text>
@@ -236,81 +246,84 @@ const ShareReport = () => {
                     </View>
                 </View>
             </Modal>
-            {showOtpPopup && (
-                <OtpPopup userName={userName} otp={otp} onClose={() => setShowOtpPopup(false)} />
-            )}
+            {showOtpPopup && <OtpPopup userName={userName} otp={otp} onClose={() => setShowOtpPopup(false)} />}
         </View>
     );
 };
 
+
 const styles = StyleSheet.create({
     container: {
-        padding: 16,
+        flex: 1,
         backgroundColor: 'white',
     },
+    scrollContainer: {
+        padding: width * 0.04,
+    },
     title: {
-        fontSize: 24,
+        fontSize: width * 0.06,
         fontWeight: 'bold',
-        marginBottom: 8,
+        marginBottom: height * 0.01,
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: width * 0.04,
         color: 'gray',
-        marginBottom: 16,
+        marginBottom: height * 0.02,
     },
     buttonContainer: {
         alignItems: 'center',
-        marginBottom: 32,
+        marginBottom: height * 0.04,
     },
     button: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#e6f6f6',
-        padding: 16,
+        padding: height * 0.02,
         borderRadius: 8,
-        marginVertical: 8,
+        marginVertical: height * 0.01,
         width: '80%',
         justifyContent: 'center',
     },
     buttonText: {
         color: '#0198A5',
-        fontSize: 16,
-        marginLeft: 8,
+        fontSize: width * 0.04,
+        marginLeft: width * 0.02,
     },
     orText: {
-        fontSize: 16,
+        fontSize: width * 0.04,
         color: 'gray',
-        marginVertical: 8,
+        marginVertical: height * 0.01,
     },
     doctorsList: {
-        marginTop: 32,
+        marginTop: height * 0.03,
     },
     doctorsListTitle: {
-        fontSize: 20,
+        fontSize: width * 0.05,
         fontWeight: 'bold',
-        marginBottom: 8,
+        marginBottom: height * 0.01,
     },
     doctorsListSubtitle: {
-        fontSize: 16,
+        fontSize: width * 0.04,
         color: 'gray',
-        marginBottom: 16,
+        marginBottom: height * 0.02,
     },
     doctorItem: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 8,
+        marginBottom: height * 0.01,
     },
     doctorName: {
-        fontSize: 16,
+        fontSize: width * 0.04,
     },
     removeButton: {
-        padding: 8,
+        padding: height * 0.01,
         backgroundColor: 'lightpink',
         borderRadius: 4,
     },
     removeButtonText: {
         color: '#F1416C',
+        fontSize: width * 0.035,
     },
     modalBackground: {
         flex: 1,
@@ -319,48 +332,47 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     modalContent: {
-        width: '80%',
-        height: '50%',
+        width: width * 0.8,
+        height: height * 0.5,
         backgroundColor: 'white',
         borderRadius: 8,
-        overflow: 'hidden',
     },
     closeButton: {
         position: 'absolute',
-        top: 16,
-        right: 16,
+        top: height * 0.02,
+        right: width * 0.04,
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderRadius: 16,
-        padding: 8,
+        padding: width * 0.02,
     },
     successModalContent: {
-        width: '80%',
-        padding: 16,
+        width: width * 0.8,
+        padding: width * 0.04,
         backgroundColor: 'white',
         borderRadius: 8,
         alignItems: 'center',
     },
     successTitle: {
-        fontSize: 20,
+        fontSize: width * 0.05,
         fontWeight: 'bold',
-        marginBottom: 16,
+        marginBottom: height * 0.02,
     },
     successMessage: {
-        fontSize: 16,
+        fontSize: width * 0.04,
         textAlign: 'center',
-        marginBottom: 16,
+        marginBottom: height * 0.02,
     },
     highlight: {
         fontWeight: 'bold',
     },
     okButton: {
         backgroundColor: '#0198A5',
-        padding: 16,
+        padding: height * 0.02,
         borderRadius: 8,
     },
     okButtonText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: width * 0.04,
     },
     divider: {
         borderBottomColor: 'grey',
@@ -369,6 +381,19 @@ const styles = StyleSheet.create({
     camera: {
         flex: 1,
     },
+    permissionContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: width * 0.05,
+        backgroundColor: "white",
+    },
+    permissionText: {
+        fontSize: width * 0.05,
+        color: "grey",
+        textAlign: "center",
+        marginBottom: height * 0.02,
+    }
 });
 
 export default ShareReport;

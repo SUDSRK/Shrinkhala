@@ -15,6 +15,9 @@ const Logo: React.FC = () => {
 
     const navigate = async () => {
         setTextVisible(false);
+        // await AsyncStorage.setItem('userName', 'ShGa00356');
+        // await AsyncStorage.setItem('fullName', 'Shubham Garg');
+
         const username = await AsyncStorage.getItem('userName');
         if (username) {
             router.push('/Dashboard');
